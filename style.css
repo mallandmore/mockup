@@ -1,0 +1,9 @@
+.train {
+    position: relative;
+    cursor: pointer;
+    transform: rotate(-90deg);
+    width: 72px;
+    height: 72px;
+    left: 0;
+    transition: left 4s cubic-bezier(0, 0, 1, 1);
+  }

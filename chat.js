@@ -27,10 +27,24 @@ window.onload = function() {
     const fname = document.getElementById('fname');
     const fsubmit = document.getElementById('fsubmit');
 
-    fsubmit.onclick = function(){
+    fsubmit.onclick = function() {
         firebase.database().ref('users/').push({
             string: fname.value
         });
+    }
+
+    const train1 = document.getElementById('train1');
+
+    train1.onclick = function() {
+        if (this.getAttribute('state') == '1') {
+            this.style.transform = 'rotate(-90deg)';
+            this.style.left = '450px';
+            this.setAttribute('state', '2');
+        } else if (this.getAttribute('state') == '2') {
+            this.style.transform = 'rotate(90deg)';
+            this.style.left = '0px';
+            this.setAttribute('state', '1');
+        }
     }
 
 
