@@ -11,25 +11,38 @@ var firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-// var canvas = document.getElementById("canvas");
-// var context = canvas.getContext("2d");
 
-document.addEventListener("dblclick", myFunction, false);
-// var click_counter = 0;
+firebase.database().ref('/pinComment/').once('value', function(snapshot) {
+    snapshot.forEach(function(childSnapshot) {
+        var fcomment = document.createElement("input",{type:"text"});
+        fcomment.readOnly = true;
+        fcomment.value = childSnapshot.child("comment").val();
+        fcomment.style.position = "absolute";
+        fcomment.style.left = childSnapshot.child("left").val()+'px';
+        fcomment.style.top = childSnapshot.child("top").val()+'px';
+        document.body.appendChild(fcomment);
+        fcomment.zIndex = -1;
+        fcomment.addEventListener("click", function(e) {
+            console.log("Click fcomment")
+        });
+    });
+});
 
-function myFunction(x){
+
+document.addEventListener("dblclick", create_comment, false);
+
+function create_comment(x){
+
     var positionLeft = x.pageX;
     var positionTop = x.pageY;
 
     var comment = document.createElement("input",{type:"text"});
-    // click_counter += 1;
-    // comment.id = "comment" + click_counter.toString();
     document.body.appendChild(comment);
     comment.style.position = "absolute";
     comment.style.left = positionLeft+'px';
     comment.style.top = positionTop+'px';
-    // comment.setAttribute('entered','false');
     comment.setAttribute("key","none");
+    comment.zIndex = 10;
     
     comment.addEventListener("keyup", function(event) {
         if (event.key === "Enter") {
@@ -38,38 +51,22 @@ function myFunction(x){
                     comment: comment.value,
                     left: positionLeft,
                     top: positionTop
-                }).key; //string?
+                }).key; 
                 comment.setAttribute("key", commentKey);
             }
             else{
-                // console.log(comment.getAttribute("key"));
                 firebase.database().ref('pinComment/'+comment.getAttribute("key")+'/').child("comment").set(comment.value);
-                // console.log("entered again")
             }
-            // comment.remove();
             comment.readOnly = true;
-            // console.log(comment.readOnly)
             comment.entered = 'true';
-            // console.log(comment.enter_counter.value)
         }
-
     });
 
     comment.addEventListener("click", function(e) {
+        console.log("Click")
         comment.readOnly = false;
     });
-
-    // firebase.database().ref('/pinComment/').on('value', function(snapshot) {
-    //     // var sb = '';
-    //     snapshot.on(function(childSnapshot) {
-    //         // var childKey = childSnapshot.key;
-    //         // console.log(childSnapshot.val().string);
-    //         sb = sb + childSnapshot.val().string + "<br>";
-    //     });
-
-    //     root.innerHTML = sb;
-    // });
     
-
 }
+
 
