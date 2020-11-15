@@ -20,23 +20,56 @@ document.addEventListener("dblclick", myFunction, false);
 function myFunction(x){
     var positionLeft = x.pageX;
     var positionTop = x.pageY;
-    console.log(positionLeft, positionTop);
 
     var comment = document.createElement("input",{type:"text"});
-    // comment.type = "text";
     // click_counter += 1;
     // comment.id = "comment" + click_counter.toString();
-    comment.style.position = "absolute";
     document.body.appendChild(comment);
+    comment.style.position = "absolute";
     comment.style.left = positionLeft+'px';
     comment.style.top = positionTop+'px';
-    console.log(comment.style.left)
-
-    .addEventListener("keyup", function(event) {
+    // comment.setAttribute('entered','false');
+    comment.setAttribute("key","none");
+    
+    comment.addEventListener("keyup", function(event) {
         if (event.key === "Enter") {
-            // Do work
+            if (comment.getAttribute("key") === "none"){
+                var commentKey = firebase.database().ref('pinComment/').push({
+                    comment: comment.value,
+                    left: positionLeft,
+                    top: positionTop
+                }).key; //string?
+                comment.setAttribute("key", commentKey);
+            }
+            else{
+                // console.log(comment.getAttribute("key"));
+                firebase.database().ref('pinComment/'+comment.getAttribute("key")+'/').child("comment").set(comment.value);
+                // console.log("entered again")
+            }
+            // comment.remove();
+            comment.readOnly = true;
+            // console.log(comment.readOnly)
+            comment.entered = 'true';
+            // console.log(comment.enter_counter.value)
         }
+
     });
+
+    comment.addEventListener("click", function(e) {
+        comment.readOnly = false;
+    });
+
+    // firebase.database().ref('/pinComment/').on('value', function(snapshot) {
+    //     // var sb = '';
+    //     snapshot.on(function(childSnapshot) {
+    //         // var childKey = childSnapshot.key;
+    //         // console.log(childSnapshot.val().string);
+    //         sb = sb + childSnapshot.val().string + "<br>";
+    //     });
+
+    //     root.innerHTML = sb;
+    // });
+    
 
 }
 
