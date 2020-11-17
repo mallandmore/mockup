@@ -58,6 +58,19 @@ window.onload = function() {
 
         root.innerHTML = sb;
     });
+
+    // update friend's cursor position
+    const friend = document.getElementById('friend');
+    firebase.database().ref('/XY/X').on('value', function(posX){
+        friend.style.left = posX.val() + "px";
+    });
+    firebase.database().ref('/XY/Y').on('value', function(posY){
+        friend.style.top = posY.val() + "px";
+    });
+
 }
+
+
+
 
 

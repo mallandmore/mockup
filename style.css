@@ -1,3 +1,7 @@
+html {
+  cursor: url(src/cursor.png), auto
+}
+
 .human {
     position: relative;
     cursor: pointer;
