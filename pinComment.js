@@ -22,7 +22,6 @@ firebase.database().ref('/pinComment/').on('value', function(snapshot) {
     //clear fcomments
     fcomments = [];
     snapshot.forEach(function(childSnapshot) {
-        // console.log("myComments in for loop",myComments);
         if (myComments.indexOf(childSnapshot.key) < 0){
             console.log(childSnapshot.key);
             var fcomment = document.createElement("input",{type:"text"});
@@ -37,20 +36,16 @@ firebase.database().ref('/pinComment/').on('value', function(snapshot) {
         }
     });
     console.log("fcomments ",fcomments.length);
-    // console.log("mycomment: ", myComments.length);
 
 });
 
 
-// document.addEventListener('keypress', listen_for_click, false);
 document.addEventListener('keydown', listen_for_click, false);
 
 function listen_for_click(e) {
-    // console.log("presseed ",e.key);
   	if (e.code == "KeyC"){
     	console.log("c");
     	document.addEventListener("click", create_comment, {once:true});
-    //   document.removeEventListener("click", create_comment, false);
 	}
 }
 
@@ -93,13 +88,6 @@ function create_comment(x){
                     left: positionLeft,
                     top: positionTop
                 })
-                // var commentKey = firebase.database().ref('pinComment/').push({
-                //     comment: comment.value,
-                //     left: positionLeft,
-                //     top: positionTop
-                // }).key; 
-                // comment.setAttribute("key", commentKey);
-                // myComments.push(commentKey);
                 console.log("Added ",comment.getAttribute("key"));
                 console.log("   myComments: ",myComments.length)
             }
@@ -109,7 +97,6 @@ function create_comment(x){
                 console.log("   myComments: ",myComments.length);
             }
             comment.readOnly = true;
-            // comment.entered = true;
         }
     });
 
