@@ -11,31 +11,42 @@ var firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-
-firebase.database().ref('/pinComment/').once('value', function(snapshot) {
+var fcomments = [];
+firebase.database().ref('/pinComment/').on('value', function(snapshot) {
+    console.log("on value")
+    //remove elements iterating through fcomments
+    fLen = fcomments.length;
+    for (i = 0; i < fLen; i++) {
+      fcomments[i].remove();
+    }
+    //clear fcomments
+    fcomments = [];
     snapshot.forEach(function(childSnapshot) {
-        var fcomment = document.createElement("input",{type:"text"});
-        fcomment.readOnly = true;
-        fcomment.value = childSnapshot.child("comment").val();
-        fcomment.style.position = "absolute";
-        fcomment.style.left = childSnapshot.child("left").val()+'px';
-        fcomment.style.top = childSnapshot.child("top").val()+'px';
-        document.body.appendChild(fcomment);
-        fcomment.zIndex = -1;
-        // fcomment.addEventListener("click", function(e) {
-        //     console.log("Click fcomment")
-        // });
+        // console.log("myComments in for loop",myComments);
+        if (myComments.indexOf(childSnapshot.key) < 0){
+            console.log(childSnapshot.key);
+            var fcomment = document.createElement("input",{type:"text"});
+            fcomment.readOnly = true;
+            fcomment.value = childSnapshot.child("comment").val();
+            fcomment.style.position = "absolute";
+            fcomment.style.left = childSnapshot.child("left").val()+'px';
+            fcomment.style.top = childSnapshot.child("top").val()+'px';
+            document.body.appendChild(fcomment);
+            fcomment.zIndex = -1;
+            fcomments.push(fcomment);
+        }
     });
+    console.log("fcomments ",fcomments.length);
+    // console.log("mycomment: ", myComments.length);
+
 });
 
 
-// document.addEventListener("dblclick", create_comment, false);
-
-document.addEventListener('keypress', listen_for_click, false);
+// document.addEventListener('keypress', listen_for_click, false);
+document.addEventListener('keydown', listen_for_click, false);
 
 function listen_for_click(e) {
-    // console.log("keypressed");
-//   console.log(e.code);
+    // console.log("presseed ",e.key);
   	if (e.code == "KeyC"){
     	console.log("c");
     	document.addEventListener("click", create_comment, {once:true});
@@ -43,23 +54,11 @@ function listen_for_click(e) {
 	}
 }
 
+myComments = [];
 function create_comment(x){
-    // document.removeEventListener("click");
-	console.log("clicked")
-
     var positionLeft = x.pageX;
     var positionTop = x.pageY;
 
-    //original
-    // var comment = document.createElement("input",{type:"text"});
-    // document.body.appendChild(comment);
-    // comment.style.position = "absolute";
-    // comment.style.left = positionLeft+'px';
-    // comment.style.top = positionTop+'px';
-    // comment.setAttribute("key","none");
-    // comment.zIndex = 10;
-    
-    //introduced div
     var comment_div = document.createElement("div");
     document.body.appendChild(comment_div);
     comment_div.style.position = "absolute";
@@ -80,85 +79,55 @@ function create_comment(x){
     modify.height = comment.offsetHeight;
     modify.onclick = function(){
         comment.readOnly = false;
-    }
+    };
 
-
-    //button shape miss, image not appearing
-    // var modify = document.createElement("button");
-    // comment_div.appendChild(modify);
-    // modify.className = "comment_div";
-    // modify.style.background = "url('src/modify.png')";
-    // modify.addEventListener ("click", function() {
-    //     comment.readOnly = false;
-    // });
-
-    //Create img element
-    // var modify = document.createElement("img");
-    // document.body.appendChild(modify);
-    // modify.src = "src/modify.png";
-    // modify.width = comment.offsetHeight;
-    // modify.height = comment.offsetHeight;
-    // modify.style.left = comment.style.right + 'px';//doesnt work
-    // modify.onclick = function(){
-    //     comment.readOnly = false;
-    // }
-
-    //Create the button
-    // var modify_button = document.createElement("button");
-    // modify_button.className = "button";
-    // modify_button.style.background = "url('src/modify.png')";
-    // document.body.appendChild(modify_button);
-
-
-    // modify_button.innerHTML = '<img src="src/modify.png"/>';
-    // modify_button.style.position = "absolute";
-    // modify_button.style.left = comment.style.right;
-    // modify_button.style.top = comment.style.top;
-    // modify_button.offsetHeight = comment.offsetHeight+"px";
-
-    // var w=comment.offsetWidth;
-    // modify_button.setAttribute("style","width:"+w+"px");
-    // modify_button.setAttribute("style","height:"+w+"px");
-
-    // // modify_button.offsetWidth = modify_button.offsetHeight+'px';
-    
-    // document.getElementById("modifyImg").setAttribute("style","width:"+w+"px");
-    // document.getElementById("modifyImg").setAttribute("style","height:"+w+"px");
-
-
-    // modify_button.addEventListener ("click", function() {
-    //     comment.readOnly = false;
-    // });
-
-    /* Read 
-
-    https://css-tricks.com/use-button-element/
-    */
-
-
+    var commentKey = 0;
     comment.addEventListener("keyup", function(event) {
         if (event.key === "Enter") {
             if (comment.getAttribute("key") === "none"){
-                var commentKey = firebase.database().ref('pinComment/').push({
+                commentKey += 1;
+                comment.setAttribute("key", String(commentKey));
+                myComments.push(String(commentKey));
+                firebase.database().ref('pinComment/'+String(commentKey)).set({
                     comment: comment.value,
                     left: positionLeft,
                     top: positionTop
-                }).key; 
-                comment.setAttribute("key", commentKey);
+                })
+                // var commentKey = firebase.database().ref('pinComment/').push({
+                //     comment: comment.value,
+                //     left: positionLeft,
+                //     top: positionTop
+                // }).key; 
+                // comment.setAttribute("key", commentKey);
+                // myComments.push(commentKey);
+                console.log("Added ",comment.getAttribute("key"));
+                console.log("   myComments: ",myComments.length)
             }
             else{
                 firebase.database().ref('pinComment/'+comment.getAttribute("key")+'/').child("comment").set(comment.value);
+                console.log("modified");
+                console.log("   myComments: ",myComments.length);
             }
             comment.readOnly = true;
             // comment.entered = true;
         }
     });
+
+    var deletion = document.createElement("img");
+    deletion.className = "comment_div";
+    comment_div.appendChild(deletion);
+    deletion.src = "src/delete.png";
+    deletion.width = comment.offsetHeight;
+    deletion.height = comment.offsetHeight;
+    deletion.onclick = function(){
+        firebase.database().ref('pinComment/'+comment.getAttribute("key")).remove();
+        var i = myComments.indexOf(comment.getAttribute("key"));
+        myComments.splice(i,1);
+        comment_div.remove();
+        console.log("deleted one, mycomments: ", myComments.length);
+    }
+
     
-    // comment.addEventListener("dblclick", function(e) {
-    //     console.log("dblclick")
-    //     comment.readOnly = false;
-    // });
-    // document.removeEventListener("click");
 }
 
 
