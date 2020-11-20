@@ -33,9 +33,9 @@ window.onload = function() {
         });
     }
 
-    const train1 = document.getElementById('train1');
+    const human1 = document.getElementById('human1');
 
-    train1.onclick = function() {
+    human1.onclick = function() {
         if (this.getAttribute('state') == '1') {
             this.style.transform = 'rotate(-90deg)';
             this.style.left = '450px';
