@@ -55,7 +55,7 @@ window.onload = function() {
 
             var dH = friendWindowH - window.innerHeight;
             var percentH = 1 - ( (friendWindowH - friendPositionY) / friendWindowH );
-
+            
             window.scrollTo(friendScrollX + dW * percentW, friendScrollY + dH * percentH);
         }
     }
