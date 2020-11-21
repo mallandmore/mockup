@@ -9,6 +9,7 @@
         <script src = "https://www.gstatic.com/firebasejs/8.0.1/firebase.js"></script>
         <link href = 'http://fonts.googleapis.com/css?family=Roboto' rel = 'stylesheet' type = 'text/css'>
         <link rel = "stylesheet" href = "publish.css">
+        <script src="publish.js"></script>
         <script src="connectToFirebase.js"></script>
         <script src="./togetherMode/getCursorPosition.js"></script>
         <script src="./togetherMode/updateCursorPosition.js"></script>
@@ -60,7 +61,7 @@
                     SNEAKERS
                 </div>
             </div>
-    
+
             <div id = "title_menu">
                 <div id = "title_menu_1">
                     SNEAKERS
@@ -74,10 +75,10 @@
                     </div>
                     <div class = "title_menu_text" id = "title_menu_4">
                         ALL SNEAKERS
-                    </div> 
+                    </div>
                 </div>
             </div>
-    
+
             <div id = "content">
                 <div id = "filter">
                     <div class = "filter_list">
@@ -428,15 +429,25 @@
                         </div>
                     </div>
                 </div>
-            </div>    
+            </div>
         </div>
         <div id = "body_frame">
+        </div>
+        <div id = "messenger">
+            <div id = "messenger_header">
+            </div>
+            <div id = "messenger_body">
+            </div>
+            <div id = "messenger_footer">
+                <input type="text" id="message_input" value="">
+            </div>
+
         </div>
     </body>
     <div id='friendCursor' style='position:absolute;'>
         <img src="src/cursor_friend.png" alt="">
     </div>
- 
+
     <div class="bottonFloating hidden-lg">
         <div id='followingButton' type="button">
             <img src="src/TEMPprofile.png" width="50px" height="50px">
@@ -445,9 +456,9 @@
     <style>
         .bottonFloating {
             position: fixed;
-            bottom: 100px; 
-            right: 15px; 
-            z-index: 99;    
+            bottom: 100px;
+            right: 15px;
+            z-index: 99;
             color: #fff;
             padding: 0;
             width: 55.5px; height: 55.5px;

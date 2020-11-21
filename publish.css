@@ -411,3 +411,149 @@ html {
   margin-right: auto;
   float: left;
 }
+
+#messenger {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 250px;
+  height: 300px;
+  border: 1px solid black;
+  background-color: white;
+  z-index: 2;
+}
+
+#messenger_header {
+  position: relative;
+  width: auto;
+  height: 15px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: 0em;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-bottom: 1px solid black;
+}
+
+#messenger_body {
+  position: relative;
+  width: auto;
+  height: 208px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: 0em;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-bottom: 1px solid black;
+
+  overflow: auto;
+}
+
+.comment {
+  position: relative;
+  width: auto;
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: 0em;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+  border: 1px solid blue;
+}
+
+.chat {
+  position: relative;
+  width: auto;
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: 0em;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+  border: 1px solid red;
+}
+
+#messenger_footer {
+  position: relative;
+  width: auto;
+  height: 15px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: 0em;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#message_input {
+  height: auto;
+  width: auto;
+  border:none;
+  border-right:0px;
+  border-top:0px;
+  border-left:0px;
+  border-bottom:0px;
+  z-index: 2;
+}
