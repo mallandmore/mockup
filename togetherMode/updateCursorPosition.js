@@ -8,7 +8,7 @@ var scrollX = window.pageXOffset;
 var uid = getParameterByName('uid');
 
 // true if user following someone
-var followingFlag = false;
+var friend = null;
 
 // event listener
 if ( document.addEventListener ) {
@@ -30,21 +30,28 @@ if ( window.addEventListener ) {
 
 // following fucntions 
 function stopFollowing(){
-    followingFlag = false;
+    friend = null;
+    document.getElementById('body_frame').style.visibility = "hidden";
 }
 
-function switchFollowing() {
-    if( followingFlag ) {
+function startFollwing(fid){
+    friend = fid;
+    document.getElementById('body_frame').style.visibility = "visible";
+}
+
+function turnOnFollowing(fid) {
+    if( friend ) {
         alert('stop Follwing');
+        stopFollowing();
     } else {
-        alert('start Follwing');
+        alert('start Follwing' + fid);
+        startFollwing(fid);
     }
-    followingFlag = !followingFlag;
     updateUserCursorData();
 }
 
 function isFollowing() {
-    return followingFlag;
+    return friend;
 }
 
 // update user cursor position
@@ -67,8 +74,8 @@ function updateUserCursorData() {
         sY : scrollY,
         sX : scrollX,
         WindowH : window.innerHeight,
-        WindowW : window.innerWidth,
-        following : followingFlag
+        WindowW : Math.max(window.innerWidth, 1223),
+        following : friend
     });
 }
 
@@ -77,4 +84,8 @@ function getParameterByName(name) {
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
         results = regex.exec(location.search);
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+window.onresize = function() {
+    frame.style.width = Math.max(window.innerWidth, 1223)-23;
 }

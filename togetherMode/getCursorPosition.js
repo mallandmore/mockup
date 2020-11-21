@@ -1,5 +1,4 @@
 window.onload = function() {
-    
 
     // update friend's cursor position
     const friend = document.getElementById('friend');
@@ -10,13 +9,21 @@ window.onload = function() {
     var friendScrollX = 0;
     var friendWindowH = 0;
     var friendWindowW = 0;
-    var correctionForPosX = 0;
+    var myWindowW = 0;
+    var correctionForX = 0;
     var friendState;
 
     var friendUid = getParameterByName('fid');
+    var myUid = getParameterByName('uid');
+
+    var followingFrame = document.getElementById('body_frame');
+    followingFrame.style.width = Math.max(window.innerWidth, 1223)-23;
+    followingFrame.style.height = document.body.clientHeight - 70;
+    followingFrame.style.color = "rgb(88,88,88)";
+    followingFrame.style.visibility = "hidden";
 
     firebase.database().ref('/CursorPosition/'+ friendUid +'/pX/').on('value', function(posX){
-        friendPositionX = posX.val();
+        friendPositionX = posX.val() - friendWindowW / 2 + myWindowW / 2;
         renderFriendCursor();
     });
     firebase.database().ref('/CursorPosition/'+ friendUid +'/pY/').on('value', function(posY){
@@ -40,15 +47,28 @@ window.onload = function() {
         renderFriendCursor();
     });
     firebase.database().ref('/CursorPosition/'+ friendUid +'/following/').on('value', function(state){
-        friendState = state.val();
+        friendIsFollowing = state.val();
+        if(friendIsFollowing == myUid){
+            followingFrame.style.visibility = "visible";
+            followingFrame.style.borderColor = "green";
+        }
+    });
+    firebase.database().ref('/CursorPosition/'+ myUid +'/WindowW/').on('value', function(width){
+        myWindowW = width.val();
     });
     
     function renderFriendCursor() {
-        correctionForPosX = (friendWindowW - window.innerWidth) / 2;
 
-        friendCursor.style.left = ( friendPositionX + friendScrollX - correctionForPosX) + "px";
+        // bounding firend cursor
+        if (( friendPositionX + friendScrollX ) < 0){
+            friendCursor.style.left = 0;
+        } else if (( friendPositionX + friendScrollX ) > myWindowW) {
+            friendCursor.style.left = myWindowW;
+        } else {
+            friendCursor.style.left = ( friendPositionX + friendScrollX ) + "px";
+        }
         friendCursor.style.top = ( friendPositionY + friendScrollY ) + "px";
-        
+
         if (isFollowing()) {
             var dW = friendWindowW - window.innerWidth;
             var percentW = 1 - ( (friendWindowW - friendPositionX) / friendWindowW );
@@ -62,21 +82,21 @@ window.onload = function() {
 
     var btn = document.getElementById('followingButton');
     if (btn.addEventListener) {
-        btn.addEventListener("click", checkAndFollow, false);
+        btn.addEventListener("click", event => checkAndFollow(friendUid), false);
     }
     else if (btn.attachEvent) {
-        btn.attachEvent('onclick', checkAndFollow);
+        btn.attachEvent('onclick', event => checkAndFollow(friendUid));
     }
 
-    function checkAndFollow() {
+    function checkAndFollow(fid) {
         if ( isFriendFollowingSomeone( )) {
             alert('Nope');
         } else {
-            switchFollowing();
+            turnOnFollowing(fid);
         }
     }
 
     function isFriendFollowingSomeone(){
-        return friendState;
+        return friendIsFollowing;
     }
 }
