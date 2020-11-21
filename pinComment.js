@@ -39,14 +39,24 @@ firebase.database().ref('/pinComment/').on('value', function(snapshot) {
 
 });
 
-
+var c_wasKeyDragged = false;
 document.addEventListener('keydown', listen_for_click, false);
+document.addEventListener('keyup', reset_drag, false);
 
 function listen_for_click(e) {
   	if (e.code == "KeyC"){
-    	console.log("c");
-    	document.addEventListener("click", create_comment, {once:true});
+        console.log("c");
+        if (!c_wasKeyDragged) {
+            document.addEventListener("click", create_comment, {once:true});
+            c_wasKeyDragged = true;
+        }
 	}
+}
+
+function reset_drag(e) {
+    if (e.code == "KeyC"){
+        c_wasKeyDragged = false;
+    }
 }
 
 myComments = [];
