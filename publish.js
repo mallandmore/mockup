@@ -1,27 +1,17 @@
+var groupId;
+
+var studentId;
+var myName;
+
+var friendId;
+var friendName;
+
 window.onload = function() {
 
-    var firebaseConfig = {
-        apiKey: "AIzaSyCg6CX4vETntZ2VrDzsDioc6_Vuk3GZHC0",
-        authDomain: "mallandmore.firebaseapp.com",
-        databaseURL: "https://mallandmore.firebaseio.com",
-        projectId: "mallandmore",
-        storageBucket: "mallandmore.appspot.com",
-        messagingSenderId: "304964816878",
-        appId: "1:304964816878:web:cc31032799331e167088ff",
-        measurementId: "G-77TJCD88E7"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-
-    var studentId = getParameterByName('studentId');
-    var groupId = getParameterByName('groupId');
-
-    var myName;
-    var friendName;
-    var friendId;
+    studentId = getParameterByName('studentId');
+    groupId = getParameterByName('groupId');
 
     const db = firebase.database().ref('/' + groupId);
-
     
     db.child('friends').once('value').then(function(snapshot){
         snapshot.forEach(element => {
@@ -31,6 +21,7 @@ window.onload = function() {
             } else {
                 friendName = element.child("name").val();
                 friendId = id;
+                traceFriendData();
             }
         });
         document.getElementById('messenger_header').innerText = friendName;
@@ -73,11 +64,4 @@ window.onload = function() {
             }
         }
     });
-}
-
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }

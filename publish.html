@@ -9,10 +9,10 @@
         <script src = "https://www.gstatic.com/firebasejs/8.0.1/firebase.js"></script>
         <link href = 'http://fonts.googleapis.com/css?family=Roboto' rel = 'stylesheet' type = 'text/css'>
         <link rel = "stylesheet" href = "publish.css">
-        <script src="publish.js"></script>
         <script src="connectToFirebase.js"></script>
-        <script src="./togetherMode/getCursorPosition.js"></script>
-        <script src="./togetherMode/updateCursorPosition.js"></script>
+        <script src="./togetherMode/getFriendState.js"></script>
+        <script src="./togetherMode/updateUserState.js"></script>
+        <script src="publish.js"></script>
     </head>
 
     <body>
@@ -434,6 +434,7 @@
         <div id = "body_frame">
         </div>
         <div id = "messenger">
+            
             <div id = "messenger_header">
             </div>
             <div id = "messenger_body">
@@ -443,41 +444,13 @@
             </div>
 
         </div>
+        <div class="bottonFloating hidden">
+            <div id='followingButton' type="button">
+                <img src="src/TEMPprofile.png" width="20px" height="20px">
+            </div>
+        </div>
     </body>
-    <div id='friendCursor' style='position:absolute;'>
+    <div id='friendCursor'>
         <img src="src/cursor_friend.png" alt="">
     </div>
-
-    <div class="bottonFloating hidden-lg">
-        <div id='followingButton' type="button">
-            <img src="src/TEMPprofile.png" width="50px" height="50px">
-        </div>
-    </div>
-    <style>
-        .bottonFloating {
-            position: fixed;
-            bottom: 100px;
-            right: 15px;
-            z-index: 99;
-            color: #fff;
-            padding: 0;
-            width: 55.5px; height: 55.5px;
-            display: inline-block;
-            outline: 0;
-            border: none;
-            text-decoration: none;
-            background: #3d3d3d;
-            text-align: center;
-            border-radius: 50%;
-            box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
-        }
-        .bottonFloating:hover {
-            background: #42A5F5;
-        }
-        .bottonFloating div {
-            font-size: 1.8em;
-            padding: 0;
-            margin: .22em 0 0 0;
-        }
-    </style>
 </html>

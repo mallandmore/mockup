@@ -421,6 +421,7 @@ html {
   border: 1px solid black;
   background-color: white;
   z-index: 2;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 2px 6px 0 rgba(0, 0, 0, 0.2);
 }
 
 #messenger_header {
@@ -556,4 +557,33 @@ html {
   border-left:0px;
   border-bottom:0px;
   z-index: 2;
+}
+
+#friendCursor {
+  position: absolute;
+  z-index: 1;
+}
+
+.bottonFloating {
+  position: fixed;
+  bottom: 340px;
+  right: 25px;
+  border: 2px solid black;
+  background-color: white;
+  text-align: center;
+  z-index: 2;
+  width: 30px; height: 26px;
+  display: inline-block;
+  border-radius: 5%;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 2px 6px 0 rgba(0, 0, 0, 0.2);
+}
+
+.bottonFloating:hover {
+  background: #42A5F5;
+}
+
+.bottonFloating div {
+  font-size: 1.8em;
+  padding: 0;
+  margin: .22em 0 0 0;
 }
