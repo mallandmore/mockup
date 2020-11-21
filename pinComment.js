@@ -47,7 +47,7 @@ function listen_for_click(e) {
   	if (e.code == "KeyC"){
         console.log("c");
         if (!c_wasKeyDragged) {
-            document.addEventListener("click", create_comment, {once:true});
+            document.addEventListener("click", create_comment, false);
             c_wasKeyDragged = true;
         }
 	}
@@ -56,6 +56,7 @@ function listen_for_click(e) {
 function reset_drag(e) {
     if (e.code == "KeyC"){
         c_wasKeyDragged = false;
+        document.removeEventListener("click", create_comment, false);
     }
 }
 
