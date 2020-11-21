@@ -6,43 +6,57 @@ window.onload = function() {
 
     var friendPositionX = 300;
     var friendPositionY = 300;
-    var friendPositionScroll = 0;
+    var friendScrollY = 0;
+    var friendScrollX = 0;
     var friendWindowH = 0;
+    var friendWindowW = 0;
+    var correctionForPosX = 0;
     var friendState;
 
     var friendUid = getParameterByName('fid');
 
-    firebase.database().ref('/XY/'+ friendUid +'/X/').on('value', function(posX){
+    firebase.database().ref('/CursorPosition/'+ friendUid +'/pX/').on('value', function(posX){
         friendPositionX = posX.val();
         renderFriendCursor();
     });
-    firebase.database().ref('/XY/'+ friendUid +'/Y/').on('value', function(posY){
+    firebase.database().ref('/CursorPosition/'+ friendUid +'/pY/').on('value', function(posY){
         friendPositionY = posY.val();
         renderFriendCursor();
     });
-    firebase.database().ref('/XY/'+ friendUid +'/S/').on('value', function(posS){
-        friendPositionScroll = posS.val();
+    firebase.database().ref('/CursorPosition/'+ friendUid +'/sX/').on('value', function(scrX){
+        friendScrollX = scrX.val();
         renderFriendCursor();
     });
-    firebase.database().ref('/XY/'+ friendUid +'/WindowH/').on('value', function(posWH){
-        friendWindowH = posWH.val();
+    firebase.database().ref('/CursorPosition/'+ friendUid +'/sY/').on('value', function(scrY){
+        friendScrollY = scrY.val();
         renderFriendCursor();
     });
-    firebase.database().ref('/XY/'+ friendUid +'/following/').on('value', function(state){
+    firebase.database().ref('/CursorPosition/'+ friendUid +'/WindowH/').on('value', function(height){
+        friendWindowH = height.val();
+        renderFriendCursor();
+    });
+    firebase.database().ref('/CursorPosition/'+ friendUid +'/WindowW/').on('value', function(width){
+        friendWindowW = width.val();
+        renderFriendCursor();
+    });
+    firebase.database().ref('/CursorPosition/'+ friendUid +'/following/').on('value', function(state){
         friendState = state.val();
     });
     
     function renderFriendCursor() {
-        friendCursor.style.left = friendPositionX + "px";
-        friendCursor.style.top = ( friendPositionY + friendPositionScroll ) + "px";
+        correctionForPosX = (friendWindowW - window.innerWidth) / 2;
+
+        friendCursor.style.left = ( friendPositionX + friendScrollX - correctionForPosX) + "px";
+        friendCursor.style.top = ( friendPositionY + friendScrollY ) + "px";
         
         if (isFollowing()) {
-            var alpha = 0;
+            var dW = friendWindowW - window.innerWidth;
+            var percentW = 1 - ( (friendWindowW - friendPositionX) / friendWindowW );
+
             var dH = friendWindowH - window.innerHeight;
-            var percent = 1 - ( (friendWindowH - friendPositionY) / friendWindowH );
-            alpha = dH * percent;
-            console.log(alpha);
-            window.scrollTo(0, friendPositionScroll + alpha);
+            var percentH = 1 - ( (friendWindowH - friendPositionY) / friendWindowH );
+
+            window.scrollTo(friendScrollX + dW * percentW, friendScrollY + dH * percentH);
         }
     }
 

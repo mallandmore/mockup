@@ -1,8 +1,13 @@
+// variables for user cursor postion
 var positionLeft = 0;
 var positionTop = 0;
-var positionScroll = window.pageYOffset;
+var scrollY = window.pageYOffset;
+var scrollX = window.pageXOffset; 
 
-var uid = getParameterByName('user');
+// get uid
+var uid = getParameterByName('uid');
+
+// true if user following someone
 var followingFlag = false;
 
 // event listener
@@ -13,19 +18,17 @@ if ( document.addEventListener ) {
 } else {
     document.onmousemove = updateCursorPosition;
 }
-
 if ( window.addEventListener ) {
     window.addEventListener("scroll", updateScrollPosition);
+    window.addEventListener("mousewheel", stopFollowing);
 } else if ( window.attachEvent ) {
     window.attachEvent("onscroll", updateScrollPosition);
 } else {
     window.onscroll = updateScrollPosition;
 }
 
-if ( window.addEventListener ){
-    window.addEventListener("mousewheel", stopFollowing);
-}
 
+// following fucntions 
 function stopFollowing(){
     followingFlag = false;
 }
@@ -44,7 +47,7 @@ function isFollowing() {
     return followingFlag;
 }
 
-
+// update user cursor position
 function updateCursorPosition(x) {
     positionLeft = x.clientX;
     positionTop = x.clientY;
@@ -52,16 +55,19 @@ function updateCursorPosition(x) {
 }
 
 function updateScrollPosition(x) {
-    positionScroll = window.pageYOffset;
+    scrollY = window.pageYOffset;
+    scrollX = window.pageXOffset;
     updateUserCursorData();
 }
 
 function updateUserCursorData() {
-    firebase.database().ref('XY/' + uid + '/').set({
-        X : positionLeft,
-        Y : positionTop,
-        S : positionScroll,
+    firebase.database().ref('CursorPosition/' + uid + '/').set({
+        pX : positionLeft,
+        pY : positionTop,
+        sY : scrollY,
+        sX : scrollX,
         WindowH : window.innerHeight,
+        WindowW : window.innerWidth,
         following : followingFlag
     });
 }
