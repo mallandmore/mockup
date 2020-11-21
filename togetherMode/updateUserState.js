@@ -58,7 +58,6 @@ function stopFollowing(){
 }
 function startFollwing(fid){
     follwingFriend = fid;
-    // alert(fid);
     document.getElementById('body_frame').style.visibility = "visible";
 }
 function isFollowing() {
@@ -84,6 +83,4 @@ function getParameterByName(name) {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
-window.onresize = function() {
-    frame.style.width = Math.max(window.innerWidth, 1223)-23;
-}
+

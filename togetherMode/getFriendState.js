@@ -46,15 +46,12 @@ function traceFriendData(){
     var followingFrame = document.getElementById('body_frame');
     followingFrame.style.width = Math.max(window.innerWidth, 1223)-24;
     followingFrame.style.height = document.body.clientHeight - 70;
-    followingFrame.style.visibility = "hidden";
 
-    // trace friend following state
+    // trace friend's following state
     firebase.database().ref('/CursorPosition/'+ friendId +'/following/').on('value', function(state){
         friendIsFollowing = state.val();
 
-        // if friend starts to follow me, show the frame
         if(friendIsFollowing == studentId){
-            // alert(studentId);
             followingFrame.style.visibility = "visible";
             followingFrame.style.borderColor = "green";
         } else {
@@ -79,11 +76,18 @@ function traceFriendData(){
         if ( friendIsFollowing ) {
             alert('Nope');
         } else {
+            btn.innerHTML = "Requesting to accompany";
+
             followingFrame.style.visibility = "visible";
             followingFrame.style.borderColor = "blue";
             startFollwing(friendId);
         }
     }
+    
+    window.addEventListener('resize', function(event){
+        followingFrame.style.width = Math.max(window.innerWidth, 1223)-23;
+        followingFrame.style.height = window.innerHeight;
+    });
 }
 
 function renderFriendCursor() {
