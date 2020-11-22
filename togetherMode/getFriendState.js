@@ -27,9 +27,20 @@ window.addEventListener('load', function() {
 function processTogetherMode(){
     const myTogetherModeDB = firebase.database().ref('/'+ groupId + '/friends/' + studentId + '/togetherModeState/');
     const friendTogetherModeDB = firebase.database().ref('/'+ groupId + '/friends/' + friendId + '/togetherModeState/');
+    const messengerDB = firebase.database().ref('/' + groupId).child('messenger');
     
     // quit together mode
     if (togetherModeState == 'on') {
+        messengerDB.push({
+            author: studentId,
+            type: "shopping_together_info", 
+            string: "Finish shopping with " + friendId
+        });
+        messengerDB.push({
+            author: friendId,
+            type: "shopping_together_info", 
+            string: "Finish shopping with " + studentId
+        });
         myTogetherModeDB.set('off');
         friendTogetherModeDB.set('off');
     } 
@@ -49,10 +60,15 @@ function processTogetherMode(){
         myTogetherModeDB.set('waiting');
 
         // send a request
-        firebase.database().ref('1/messenger/').push({
+        messengerDB.push({
             author : studentId,
             type : "shopping_together_request"
-        })
+        });
+        messengerDB.push({
+            author : studentId,
+            type : "shopping_together_info",
+            string: "Sent a request to "+ friendName
+        });
     }
 }
 
@@ -115,14 +131,24 @@ function traceTogetherModeState() { // always on
                 type: "shopping_together_info", 
                 string: "Accepted " + friendName + "'s request." 
             });
+            messengerDB.push({
+                author: "all",
+                type: "shopping_together_info", 
+                string: "Shopping together!" 
+            });
             myTogetherModeDB.set('on');
             friendTogetherModeDB.set('on');
         } else if ( togetherModeState.split(':')[0] == 'reject' ) { 
             var changing_key = togetherModeState.split(':')[1];
-            messengerDB.child('messenger').child(changing_key).set({ 
+            messengerDB.child(changing_key).set({ 
                 author: studentId,
                 type: "shopping_together_info", 
                 string: "Rejected " + friendName + "'s request." 
+            });
+            messengerDB.push({ 
+                author: friendId,
+                type: "shopping_together_info", 
+                string: "My request is rejected." 
             });
             myTogetherModeDB.set('off');
             friendTogetherModeDB.set('off');
