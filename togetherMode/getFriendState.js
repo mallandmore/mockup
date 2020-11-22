@@ -8,43 +8,21 @@ var myContentsWidth = 1200; // min 1200 (default width)
 window.addEventListener('load', function() {
     var startTogetherBtn = document.getElementById('startTogetherButton');
     if (startTogetherBtn.addEventListener) {
-        startTogetherBtn.addEventListener("click", manageTogethetMode, false);
+        startTogetherBtn.addEventListener("click", manageTogetherMode, false);
     }
     else if (startTogetherBtn.attachEvent) {
-        startTogetherBtn.attachEvent('onclick', manageTogethetMode);
+        startTogetherBtn.attachEvent('onclick', manageTogetherMode);
     }
 });
 
 
-function manageTogethetMode(){
+function manageTogetherMode(){
     const myTogetherModeDB = firebase.database().ref('/'+ groupId + '/friends/' + studentId + '/togetherModeState/');
     const friendTogetherModeDB = firebase.database().ref('/'+ groupId + '/friends/' + friendId + '/togetherModeState/');
     const messengerDB = firebase.database().ref('/' + groupId).child('messenger');
 
-    // send requset for together mode
-    if (togetherModeState == 'off') {
-
-        myTogetherModeDB.set('waiting');
-        startTogetherButton.style.background = 'gray';
-        startTogetherButton.style.color = 'white';
-        startTogetherButton.innerHTML = 'Cancle the request to '+ friendName;
-
-        // send a request
-        currentRequestKey = messengerDB.push({
-            author : studentId,
-            type : "shopping_together_request"
-        });
-
-        // send a report for me
-        messengerDB.push({
-            author : studentId,
-            type : "shopping_together_info",
-            string: "Sent a request to "+ friendName
-        });
-    }
-
     // quit together mode
-    else if (togetherModeState == 'on') {
+    if (togetherModeState == 'on') {
 
         // send a report to me that together mode is off.
         messengerDB.push({
