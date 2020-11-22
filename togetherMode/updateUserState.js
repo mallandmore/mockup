@@ -47,6 +47,7 @@ function updateCursorPosition(x) {
     positionLeft = x.clientX;
     positionTop = x.clientY;
     updateUserDataToDB();
+    updateUserUrlDB(location.href.split('?')[0]);
 }
 function updateScrollPosition(x) {
     scrollY = window.pageYOffset;
