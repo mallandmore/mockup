@@ -23,6 +23,7 @@ window.onload = function() {
             } else {
                 friendName = element.child("name").val();
                 friendId = id;
+
                 traceTogetherModeState();
                 // prepare shop together interface
                 document.getElementById('startTogetherButton').innerHTML = "Shopping together with " + friendName;
@@ -32,7 +33,6 @@ window.onload = function() {
         document.getElementById('messenger_header').innerText = friendName;
     });
     
-    checkPreviousFollowingState();
     addUserMovementListener();
 
     db.child('messenger').on('value', function(snapshot){

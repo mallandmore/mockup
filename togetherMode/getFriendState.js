@@ -82,8 +82,10 @@ function startTogetherMode() {
     startTogetherButton.innerHTML = "Quit together mode";
 
     // show go-to function
-    followingButton.innerHTML = "Go to " + friendName;
-    followingButton.style.visibility = 'visible';
+    if(!isFollowing()) {
+        followingButton.innerHTML = "Go to " + friendName;
+        followingButton.style.visibility = 'visible';
+    }
 }
 function quitTogetherMode() {
     // quit following mode
@@ -234,7 +236,7 @@ function traceFriendData(fid){
             followingButton.style.pointerEvents = "inherit"
             followingButton.innerHTML = "Switch leader with " + friendName;
             updateUserDataToDB();
-        } else {
+        } else if (!isFollowing()) {
             // friend stops following me
             document.getElementById('status').style.visibility = 'hidden';
             followingFrame.style.visibility = "hidden";
