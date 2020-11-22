@@ -7,18 +7,19 @@ var scrollX = window.pageXOffset;
 var followingFriend;
 
 function checkPreviousFollowingState(){
-    firebase.database().ref('/data/' + getParameterByName('studentId') + '/following').once('value').then(function(snapshot){
+    firebase.database().ref('/data/' + getParameterByName('studentId') + '/following/').once('value').then(function(snapshot){
         followingFriend = snapshot.val();
+        checkit(followingFriend);
     });
-    console.log(followingFriend);
-    if (followingFriend != null) {
-        // alert(followingFriend);
-        // console.log(followingFriend);
-        startFollowing(followingFriend);
+    function checkit(fid){
+        if (fid != null) {
+            startFollowing(fid);
+        }
     }
 }
 
 function addUserMovementListener(){
+    checkPreviousFollowingState();
     // event listener
     if ( document.addEventListener ) {
         document.addEventListener("mousemove", updateCursorPosition, false);
@@ -36,8 +37,6 @@ function addUserMovementListener(){
         window.onscroll = updateScrollPosition;
     }
 }
-
-
 
 // update user cursor position
 function updateCursorPosition(x) {
@@ -67,12 +66,12 @@ function updateUserFollowingDB(){
 
 // following fucntions 
 function stopFollowing(){
+    // alert(followingFriend);
     if (followingFriend == null) return;
 
     followingFriend = null;
-    followingButton.style.visibility = 'visible';
-
-    followingButton.innerHTML = "Go to " + friendName;
+    document.getElementById('followingButton').innerHTML = "Go to " + friendName;
+    document.getElementById('followingButton').style.visibility = 'visible';
 
     document.getElementById('status').style.visibility = 'hidden';
     document.getElementById('statusRemark').style.visibility = 'hidden';
@@ -82,8 +81,7 @@ function stopFollowing(){
 function startFollowing(fid){
     followingFriend = fid;
 
-    followingButton.style.visibility = 'hidden';
-
+    document.getElementById('followingButton').style.visibility = 'hidden';
     document.getElementById('status').innerHTML = 'Go around with ' + friendName + ' now';
     document.getElementById('status').style.background = '#4580ff';
     document.getElementById('status').style.visibility = 'visible';
@@ -93,7 +91,7 @@ function startFollowing(fid){
     updateUserFollowingDB();
 }
 function isFollowing() {
-    return followingFriend;
+    return (followingFriend != null);
 }
 
 
