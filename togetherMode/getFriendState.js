@@ -49,7 +49,7 @@ function processTogetherMode(){
     // user should cancel ....
     else if (togetherModeState == 'waiting') {
 
-        myTogetherModeDB.set('cancle');
+        myTogetherModeDB.set('off');
         startTogetherButton.style.background = 'white';
         startTogetherButton.style.color = '#444444';
         startTogetherButton.innerHTML = "Shopping together with " + friendName;
