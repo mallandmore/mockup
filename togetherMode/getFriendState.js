@@ -39,8 +39,8 @@ function manageTogetherMode(){
         // reset my state
         myTogetherModeDB.set('off');
         // reset button
-        startTogetherButton.style.background = 'white';
-        startTogetherButton.style.color = '#444444';
+        // startTogetherButton.style.background = 'white';
+        // startTogetherButton.style.color = '#444444';
         startTogetherButton.innerHTML = "Shopping together with " + friendName;
 
         // cancel request
@@ -55,8 +55,8 @@ function manageTogetherMode(){
     else if (togetherModeState == 'off') {
 
         myTogetherModeDB.set('waiting');
-        startTogetherButton.style.background = 'gray';
-        startTogetherButton.style.color = 'white';
+        // startTogetherButton.style.background = 'white';
+        // startTogetherButton.style.color = '#444444';
         startTogetherButton.innerHTML = 'Cancle the request to '+ friendName;
 
         // send a request
@@ -78,10 +78,8 @@ function startTogetherMode() {
     friendCursor.style.visibility = 'visible';
 
     // change button text
-    startTogetherButton.style.background = 'white';
-    startTogetherButton.style.color = '#444444';
     startTogetherButton.innerHTML = "Quit together mode";
-    startTogetherButton.style.pointerEvents = 'inherit';
+
     // show go-to function
     followingButton.innerHTML = "Go to " + friendName;
     followingButton.style.visibility = 'visible';
@@ -99,8 +97,6 @@ function quitTogetherMode() {
     friendCursor.style.visibility = 'hidden';
 
     // change button text
-    startTogetherButton.style.background = 'white';
-    startTogetherButton.style.color = '#444444';
     startTogetherButton.innerHTML = "Shopping together with " + friendName;
     // hide go-to function
     followingButton.style.visibility = 'hidden';
@@ -222,15 +218,28 @@ function traceFriendData(fid){
 
         if(friendIsFollowing == studentId){
             // friend start following me
+            document.getElementById('status').innerHTML = friendName + ' is following you now';
+            document.getElementById('status').style.background = '#11D275';
+            document.getElementById('status').style.visibility = 'visible';
+            document.getElementById('statusRemark').style.visibility = 'hidden';
+
             followingFrame.style.visibility = "visible";
-            followingFrame.style.borderColor = "green";
+            followingFrame.style.borderColor = "#11D275";    
 
             followingButton.style.pointerEvents = "inherit"
             followingButton.innerHTML = "Switch leader with " + friendName;
             updateUserDataToDB();
         } else {
             // friend stops following me
+            document.getElementById('status').style.visibility = 'hidden';
             followingFrame.style.visibility = "hidden";
+        }
+    });
+
+
+    firebase.database().ref('/CursorPosition/'+ studentId +'/following/').on('value', function(state){
+        if(state.val() == null) {
+            stopFollowing();
         }
     });
 
@@ -245,9 +254,10 @@ function traceFriendData(fid){
 
     function goToFriendLocation(fid) {
         if ( friendIsFollowing != null ) {
-        } else {
-            startFollowing(fid);
+            // drop follower
+            firebase.database().ref('/CursorPosition/'+ fid +'/following/').set(null);
         }
+        startFollowing(fid);
     }
 
     window.addEventListener('resize', function(event){
