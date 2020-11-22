@@ -48,7 +48,7 @@ firebase.database().ref(groupId+'/messenger/').on('value', function(snapshot) {
             oldComments.push(comment);
             comment.className = "pinComment";
             comment.style.position = "absolute";
-            comment.style.left = childSnapshot.child("left").val()-600+window.innerWidth/2+'px';
+            comment.style.left = childSnapshot.child("left").val()+'px';
             comment.style.top = childSnapshot.child("top").val()+'px';
             comment.setAttribute("commentKey", childSnapshot.key);
             document.body.appendChild(comment);
