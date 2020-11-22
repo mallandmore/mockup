@@ -186,6 +186,8 @@ window.onload = function() {
                     console.log(url_id);
                     if (url_key != url_id ) {
                         db.child('friends').child(studentId).child('goToLink').set(top).then(goToLink(url_key));
+                    } else {
+                        window.scrollTo(0, top - window.innerHeight * 0.2);
                     }
                     // window.location.href = 'pinComment.html?studentId=' + studentId + "&groupId=" + groupId;
                 }, false);
