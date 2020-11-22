@@ -7,6 +7,7 @@ var friendWindowH = 0;
 var friendWindowW = 0;
 var friendIsFollowing = null;
 var togetherModeState;
+var currentRequestKey;
 
 var myContentsWidth = 1200; // min 1200 (default width)
 
@@ -27,32 +28,42 @@ window.addEventListener('load', function() {
 function processTogetherMode(){
     const myTogetherModeDB = firebase.database().ref('/'+ groupId + '/friends/' + studentId + '/togetherModeState/');
     const friendTogetherModeDB = firebase.database().ref('/'+ groupId + '/friends/' + friendId + '/togetherModeState/');
-    
+    const messengerDB = firebase.database().ref('/' + groupId).child('messenger');
+
     // quit together mode
     if (togetherModeState == 'on') {
         myTogetherModeDB.set('off');
         friendTogetherModeDB.set('off');
     } 
     
-    // user should cancle .... 
-    else if (togetherModeState == 'waiting') { // friend already request to me
-        // auto start
+    // user should cancel .... 
+    else if (togetherModeState == 'waiting') { 
+
+        myTogetherModeDB.set('cancle');
+        startTogetherButton.style.background = 'white';
+        startTogetherButton.style.color = '#444444';
+        startTogetherButton.innerHTML = "Shopping together with " + friendName;
+
+        messengerDB.child(currentRequestKey).set({
+            author: "all",
+            type: "shopping_together_info", 
+            string: "This request is canceled."
+        });
     } 
     
     // send requset for together mode 
     else if (togetherModeState == 'off') {
+
+        myTogetherModeDB.set('waiting');
         startTogetherButton.style.background = 'gray';
         startTogetherButton.style.color = 'white';
-        startTogetherButton.innerHTML = 'Sent a request to '+ friendName;
-        // 수락, 거절시 까지 버튼 비활성화
-        startTogetherButton.style.pointerEvents = 'none';
-        myTogetherModeDB.set('waiting');
-
+        startTogetherButton.innerHTML = 'Cancle the request to '+ friendName;
+        
         // send a request
-        firebase.database().ref('1/messenger/').push({
+        currentRequestKey = firebase.database().ref('1/messenger/').push({
             author : studentId,
             type : "shopping_together_request"
-        })
+        });
     }
 }
 
@@ -91,6 +102,8 @@ function quitTogetherMode() {
     // hide cursor
     friendCursor.style.visibility = 'hidden';
     // change button text
+    startTogetherButton.style.background = 'white';
+    startTogetherButton.style.color = '#444444';
     startTogetherButton.innerHTML = "Shopping together with " + friendName;
     // hide go to function
     followingButton.style.visibility = 'hidden';
@@ -108,18 +121,16 @@ function traceTogetherModeState() { // always on
             quitTogetherMode();
         } else if ( togetherModeState == 'waiting' ) {
 
-        } else if ( togetherModeState.split(':')[0] == 'accept' ) { 
-            var changing_key = togetherModeState.split(':')[1];
-            messengerDB.child(changing_key).set({
+        } else if ( togetherModeState == 'accept' ) { 
+            messengerDB.child(currentRequestKey).set({
                 author: studentId,
                 type: "shopping_together_info", 
                 string: "Accepted " + friendName + "'s request." 
             });
             myTogetherModeDB.set('on');
             friendTogetherModeDB.set('on');
-        } else if ( togetherModeState.split(':')[0] == 'reject' ) { 
-            var changing_key = togetherModeState.split(':')[1];
-            messengerDB.child(changing_key).set({ 
+        } else if ( togetherModeState == 'reject' ) { 
+            messengerDB.child(currentRequestKey).set({ 
                 author: studentId,
                 type: "shopping_together_info", 
                 string: "Rejected " + friendName + "'s request." 
