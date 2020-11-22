@@ -250,7 +250,7 @@ function renderFriendCursor() {
     if (( friendPositionX + friendScrollX ) < 0){
         friendCursor.style.left = 0;
     } else if (( friendPositionX + friendScrollX ) > myContentsWidth - friendCursorSize) {
-        friendCursor.style.left = myContentsWidth - cursorSize;
+        friendCursor.style.left = myContentsWidth - friendCursorSize;
     } else {
         friendCursor.style.left = ( friendPositionX + friendScrollX ) + "px";
     }
