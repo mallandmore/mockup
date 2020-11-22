@@ -1,3 +1,6 @@
+// const defaultLink = 'file:///Users/oooo/Documents/GitHub/mockup/';
+const defaultLink = 'https://mallandmore.github.io/mockup/';
+
 // variables for user cursor postion
 var positionLeft = 0;
 var positionTop = 0;
@@ -47,6 +50,7 @@ function updateCursorPosition(x) {
     positionLeft = x.clientX;
     positionTop = x.clientY;
     updateUserDataToDB();
+    updateUserUrlDB(location.href.split('?')[0]);
 }
 function updateScrollPosition(x) {
     scrollY = window.pageYOffset;
@@ -112,9 +116,10 @@ function getParameterByName(name) {
 
 
 function goToLink(linkid) {
-    const defaultLink = 'file:///Users/oooo/Documents/GitHub/mockup/';
-
-    var newPage = defaultLink + 'detailPage.html';
+    if(isFollowing()){
+        stopFollowing();
+    }
+    var newPage = defaultLink + linkid;
     updateUserUrlDB(newPage);
     window.location.href = newPage + '?groupId=' + groupId + '&studentId=' + studentId ;
 }

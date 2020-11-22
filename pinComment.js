@@ -169,7 +169,7 @@ function create_comment(positionLeft, positionTop){
             //When first entered the comment
             var commentKey = firebase.database().ref(groupId+'/messenger/').push({
                 type: "comment",
-                left: 600 + (positionLeft - window.innerWidth/2),
+                left: Math.min((positionLeft - (window.innerWidth - 1200)/2), positionLeft),
                 top: positionTop,
                 thread: "none",
                 url: url_id

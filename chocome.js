@@ -30,7 +30,6 @@ window.onload = function() {
     var XRandPos = columnPosition[IndexX];
     var YRandPos = rowPosition[IndexY];
     var randDirection = initDirection[RandD];
-    
 
     function getOverallPos() {
         if (IndexX == 0) {
@@ -261,7 +260,7 @@ window.onload = function() {
             results = regex.exec(location.search);
         return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
     }
-      
+    
     function move(element, direction, distance, duration) {
         // function originally from https://medium.com/@theredwillows/moving-an-element-with-javascript-part-1-765c6a083d45
         return new Promise(function (resolve, reject) {
@@ -273,17 +272,17 @@ window.onload = function() {
             var destination = Number(value) + distance;
             var frameDistance = distance / (duration / 10);
             function moveAFrame() {
-               elStyle = window.getComputedStyle(element);
-               value = elStyle.getPropertyValue(topOrLeft).replace("px", "");
-               var newLocation = Number(value) + frameDistance;
-               var beyondDestination = ( (!isNegated && newLocation>=destination) || (isNegated && newLocation<=destination) );
-               if (beyondDestination) {
-                  element.style[topOrLeft] = destination + "px";
-                  clearInterval(movingFrames);
-               }
-               else {
-                  element.style[topOrLeft] = newLocation + "px";
-               }
+            elStyle = window.getComputedStyle(element);
+            value = elStyle.getPropertyValue(topOrLeft).replace("px", "");
+            var newLocation = Number(value) + frameDistance;
+            var beyondDestination = ( (!isNegated && newLocation>=destination) || (isNegated && newLocation<=destination) );
+            if (beyondDestination) {
+                element.style[topOrLeft] = destination + "px";
+                clearInterval(movingFrames);
+            }
+            else {
+                element.style[topOrLeft] = newLocation + "px";
+            }
             }
             var movingFrames = setInterval(moveAFrame, 10);
             setTimeout(function() {
@@ -291,7 +290,7 @@ window.onload = function() {
             }, duration);
         });
     }
-
+    
     var horizontalBlockDist = Number(columnPosition[1] - columnPosition[0]);
     var verticalBlockDist = Number(rowPosition[1] - rowPosition[0]);
 
@@ -700,5 +699,6 @@ window.onload = function() {
                 }
             }
         });
-    }
+    }    
+    
 }
