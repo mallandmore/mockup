@@ -139,11 +139,14 @@ window.onload = function() {
                 }
             } else if (type == "comment") {
                 element.child('thread').forEach(elementDD => {
+                    console.log(elementDD.key);
                     sender = elementDD.child('sender').val();
                     receiver = elementDD.child('receiver').val();
                     string = elementDD.child('string').val();
                     time = elementDD.child('time').val();
-                })
+                });
+                const url_key = element.child('url').val();
+                console.log(url_key);
                 const top = element.child('top').val();
                 const left = element.child('left').val();
                 const message = document.createElement("div");
@@ -154,25 +157,31 @@ window.onload = function() {
                 message_wrap.style.marginLeft = "0px";
                 message_wrap.style.marginRight = "0px";
                 document.getElementById("messenger_body").appendChild(message_wrap).appendChild(message); 
+                if (sender == studentId) {
+                    message.innerHTML = "<div class = 'pinComment_thread_header'>" +
+                    "<img class = 'pinComment_author_profile' src = 'src/profile.png'>" +
+                    "<div class = 'pinComment_author_info'>" + "<div class = 'pinComment_author_name'>"
+                    + myName + "</div> <div class = 'pinComment_time'>" + time + "</div></div></div>" +
+                    "<div class = 'pinComment_input'><div class = 'pinComment_text_readOnly'>" + string + 
+                    "</div></div>";
+                } else if (sender == friendId) {
+                    message.innerHTML = "<div class = 'pinComment_thread_header'>" +
+                    "<img class = 'pinComment_author_profile' src = 'src/profile.png'>" +
+                    "<div class = 'pinComment_author_info'>" + "<div class = 'pinComment_author_name'>"
+                    + friendName + "</div> <div class = 'pinComment_time'>" + time + "</div></div></div>" +
+                    "<div class = 'pinComment_input'><div class = 'pinComment_text_readOnly'>" + string + 
+                    "</div></div>";
+                }
                 message.addEventListener('click', function(){
+                    var url = location.href.split("?")[0].split("/");
+                    var url_id = url[url.length-1];
+                    console.log(url_id);
+                    if (url_key != url_id ) {
+                        goToLink(url_key);
+                    }
                     // window.location.href = 'pinComment.html?studentId=' + studentId + "&groupId=" + groupId;
                     window.scrollTo(0, top - window.innerHeight * 0.2);
                 }, false);
-                if (sender == studentId) {
-                    message.innerHTML = "<div class = 'pinComment_thread_header'>" +
-                        "<img class = 'pinComment_author_profile' src = 'src/profile.png'>" +
-                        "<div class = 'pinComment_author_info'>" + "<div class = 'pinComment_author_name'>"
-                        + myName + "</div> <div class = 'pinComment_time'>" + time + "</div></div></div>" +
-                        "<div class = 'pinComment_input'><div class = 'pinComment_text_readOnly'>" + string + 
-                        "</div></div>";
-                } else if (sender == friendId) {
-                    message.innerHTML = "<div class = 'pinComment_thread_header'>" +
-                        "<img class = 'pinComment_author_profile' src = 'src/profile.png'>" +
-                        "<div class = 'pinComment_author_info'>" + "<div class = 'pinComment_author_name'>"
-                        + friendName + "</div> <div class = 'pinComment_time'>" + time + "</div></div></div>" +
-                        "<div class = 'pinComment_input'><div class = 'pinComment_text_readOnly'>" + string + 
-                        "</div></div>";
-                }
             } else if (type == "chat") {
                 const message = document.createElement("div");
                 message.className = type;
