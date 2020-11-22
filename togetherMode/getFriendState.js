@@ -7,6 +7,7 @@ var myContentsWidth = 1200; // min 1200 (default width)
 // shopping together mode
 window.addEventListener('load', function() {
     var startTogetherBtn = document.getElementById('startTogetherButton');
+    var btn = document.getElementById('followingButton');
     if (startTogetherBtn.addEventListener) {
         startTogetherBtn.addEventListener("click", manageTogetherMode, false);
     }
@@ -244,7 +245,7 @@ function traceFriendData(fid){
     });
 
     // scripts for following button
-    var btn = document.getElementById('followingButton');
+    
     if (btn.addEventListener) {
         btn.addEventListener("click", event => goToFriendLocation(fid), false);
     }

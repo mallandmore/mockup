@@ -122,28 +122,36 @@ window.onload = function() {
                     const message = document.createElement("div");
                     message.className = type;
                     document.getElementById("messenger_body").appendChild(message);
-                    message.innerText = "Me: " + string;
+                    message.style.marginLeft = "20px";
+                    message.innerText = string;
                     message.addEventListener('click', function(){
-                        window.location.href = 'pinComment.html?studentId=' + studentId + "&groupId=" + groupId;
+                        // window.location.href = 'pinComment.html?studentId=' + studentId + "&groupId=" + groupId;
                         window.scrollTo(0, top - window.innerHeight * 0.2);
                     }, false);
                 } else if (sender == friendId) {
                     const message = document.createElement("div");
                     message.className = type;
                     document.getElementById("messenger_body").appendChild(message);
-                    message.innerText = friendName + ": " + string;
+                    message.style.marginRight = "20px";
+                    message.innerText = string;
+                    message.addEventListener('click', function(){
+                        // window.location.href = 'pinComment.html?studentId=' + studentId + "&groupId=" + groupId;
+                        window.scrollTo(0, top - window.innerHeight * 0.2);
+                    }, false);
                 }
             } else if (type == "chat") {
                 if (sender == studentId) {
                     const message = document.createElement("div");
                     message.className = type;
                     document.getElementById("messenger_body").appendChild(message);
-                    message.innerText = "Me: " + string;
+                    message.style.marginLeft = "20px";
+                    message.innerText = string;
                 } else if (sender == friendId) {
                     const message = document.createElement("div");
                     message.className = type;
                     document.getElementById("messenger_body").appendChild(message);
-                    message.innerText = friendName + ": " + string;
+                    message.style.marginRight = "20px";
+                    message.innerText = string;
                 }
             }
             
