@@ -79,11 +79,11 @@ window.onload = function() {
     let posOnImg = [];
     for (let thumbnailImg of thumbnailImagesArr) {
         const imgNum = thumbnailImagesArr.indexOf(thumbnailImg) + 1;
-        var imgTop = thumbnailImg.getBoundingClientRect().top;
-        var imgLeft = thumbnailImg.getBoundingClientRect().left;
-        var imgRight = thumbnailImg.getBoundingClientRect().right;
+        var imgTop = thumbnailImg.getBoundingClientRect().top + window.pageYOffset;
+        var imgLeft = thumbnailImg.getBoundingClientRect().left + window.pageXOffset;
+        var imgRight = thumbnailImg.getBoundingClientRect().right + window.pageXOffset;
 
-        if (imgNum % 3 == 1 || imgNum == 5) {
+        if (imgNum % 3 == 1 || imgNum == 2 || imgNum == 8) {
             let a = [];
             a.push(imgRight - 15);
             a.push(imgTop);
@@ -130,27 +130,48 @@ window.onload = function() {
                     const facingDir = childSnapshot.val().direction;
                     const movingOrNot = childSnapshot.val().isMoving;
                     const movingTime = childSnapshot.val().movingStartTime;
-                    if (insertionTime > movingTime && !movingOrNot) {
-                        var otherHuman = document.createElement("img");
-                        otherHuman.src = "src/human.gif";
-                        otherHuman.className = "human";
-                        if (curr == 0) {
-                            var initPos = getPositionFromPath(initPath);
-                            otherHuman.style.left = initPos[0] - 15;
-                            otherHuman.style.top = initPos[1] - 15;
-                            otherHuman.style.transform = facingDir;
-                        } else {
+                    const drawnOrNot = childSnapshot.val().alreadyDrawn;
+                    if (!drawnOrNot){
+                        if (insertionTime > movingTime && movingOrNot) {
+                            var otherHuman = document.createElement("img");
+                            otherHuman.src = "src/human.gif";
+                            otherHuman.className = "human";
                             otherHuman.style.left = (posOnImg[curr - 1])[0];
+                            console.log((posOnImg[curr - 1])[0]);
                             otherHuman.style.top = (posOnImg[curr - 1])[1];
-                            if (curr % 3 == 1 || curr == 5) {
+                            console.log((posOnImg[curr - 1])[1]);
+                            if (curr % 3 == 1 || curr == 2 || curr == 8) {
                                 otherHuman.style.transform = 'rotate(90deg)';
                             } else {
                                 otherHuman.style.transform = 'rotate(-90deg)';
                             }
+                            otherHuman.setAttribute('key', childSnapshot.key);
+                            otherHuman.id = childSnapshot.key;
+                            document.body.appendChild(otherHuman);
+                            firebase.database().ref('/chocome/'+childSnapshot.key).update({alreadyDrawn : true});
+                        } else if (!movingOrNot) {
+                            var otherHuman = document.createElement("img");
+                            otherHuman.src = "src/human.gif";
+                            otherHuman.className = "human";
+                            if (curr == 0) {
+                                var initPos = getPositionFromPath(initPath);
+                                otherHuman.style.left = initPos[0] - 15;
+                                otherHuman.style.top = initPos[1] - 15;
+                                otherHuman.style.transform = facingDir;
+                            } else {
+                                otherHuman.style.left = (posOnImg[curr - 1])[0];
+                                otherHuman.style.top = (posOnImg[curr - 1])[1];
+                                if (curr % 3 == 1 || curr == 5) {
+                                    otherHuman.style.transform = 'rotate(90deg)';
+                                } else {
+                                    otherHuman.style.transform = 'rotate(-90deg)';
+                                }
+                            }
+                            otherHuman.setAttribute('key', childSnapshot.key);
+                            otherHuman.id = childSnapshot.key;
+                            document.body.appendChild(otherHuman);
+                            firebase.database().ref('/chocome/'+childSnapshot.key).update({alreadyDrawn : true});
                         }
-                        otherHuman.setAttribute('key', childSnapshot.key);
-                        otherHuman.id = childSnapshot.key;
-                        document.body.appendChild(otherHuman);
                     }
                 }
             });
@@ -165,7 +186,8 @@ window.onload = function() {
             isMoving : false,
             direction : randDirection,
             userId : studentId,
-            movingStartTime : 0
+            movingStartTime : 0,
+            alreadyDrawn : false
         }).key;
         return newChocome;
     }
@@ -175,8 +197,10 @@ window.onload = function() {
             thumbnailImg.onclick = function() {
                 const imgNum = thumbnailImagesArr.indexOf(thumbnailImg) + 1;
                 var thisChocome = firebase.database().ref('/chocome/'+myChocomeKey);
+                var movingOrNot;
                 thisChocome.child('isMoving').once('value').then(function(moveTF){
-                    const movingOrNot = moveTF.val();
+                    movingOrNot = moveTF.val();
+                }).then(function(){
                     if (!movingOrNot) {
                         thisChocome.child('currImg').once('value').then(function(currVal){
                             const curr = currVal.val();
@@ -189,38 +213,37 @@ window.onload = function() {
                                 isMoving : true
                             });
                         });
-                    }
+                    };
                 });
-            };   
+            }
         }
     }
 
     function moveHumans() {
-        firebase.database().ref('/chocome/').on('value', function(snapshot){
-            snapshot.forEach(function(childSnapshot) {   
-                const initPath = childSnapshot.val().initPath;
-                const movingTime = childSnapshot.val().movingStartTime;
-                const movingOrNot = childSnapshot.val().isMoving;
-                const uid = childSnapshot.val().userId;
-                var eachHuman = document.getElementById(childSnapshot.key);
-                if (uid != studentId) {
-                    if (movingOrNot) {
-                        console.log(childSnapshot.key);
-                        var curr = childSnapshot.child('currImg').val();
-                        var prev = childSnapshot.child('prevImg').val();
-                        console.log(prev);
-                        console.log(curr);
-                        console.log(initPath);
-                        pathAlgo(prev, curr, initPath, eachHuman).then(function(flag) {
-                            if (flag)  {
-                                console.log(flag);
-                                firebase.database().ref('/chocome/'+childSnapshot.key).child('isMoving').set(false);
-                            }
-                        });
-                    }
+        firebase.database().ref('/chocome/').on('child_changed', function(childSnapshot, prevValue) {
+            //console.log(childSnapshot.key);
+            const initPath = childSnapshot.val().initPath;
+            const movingTime = childSnapshot.val().movingStartTime;
+            const movingOrNot = childSnapshot.val().isMoving;
+            const uid = childSnapshot.val().userId;
+            var eachHuman = document.getElementById(childSnapshot.key);
+            if (uid != studentId) {
+                if (movingOrNot && insertionTime < movingTime) {
+                    console.log(childSnapshot.key);
+                    var curr = childSnapshot.child('currImg').val();
+                    var prev = childSnapshot.child('prevImg').val();
+                    console.log(prev);
+                    console.log(curr);
+                    console.log(initPath);
+                    pathAlgo(prev, curr, initPath, eachHuman).then(function(flag) {
+                        console.log(flag);
+                        if (flag)  {
+                            console.log(flag);
+                            firebase.database().ref('/chocome/'+childSnapshot.key).child('isMoving').set(false);
+                        }
+                    });
                 }
-                
-            });
+            }
         });
     }
 
@@ -348,7 +371,9 @@ window.onload = function() {
     function pathAlgo(fromImg, toImg, initPath, element) {
         return new Promise(function(resolve, reject) {
             if (fromImg == toImg) {
+                console.log('this');
                 resolve(true);
+                return;
             }
             let pathArr = whereToGo(fromImg, toImg, element);
             let path2 = pathArr[0];
@@ -356,12 +381,18 @@ window.onload = function() {
                 if (initPath != path2) {
                     PathToPath(initPath, path2, element).then(function(flag1) {
                         if (flag1) PathToImg(toImg, element).then(function(flag2) {
-                            if (flag2) resolve(true);
+                            if (flag2) {
+                                resolve(true);
+                                return;
+                            }
                         });
                     });
                 } else {
                     PathToImg(toImg, element).then(function(flag) {
-                        if (flag) resolve(true);
+                        if (flag) {
+                            resolve(true);
+                            return;
+                        }
                     });
                 }
             } else {
@@ -371,12 +402,18 @@ window.onload = function() {
                         if (path1 != path2) {
                             PathToPath(path1, path2, element).then(function(flag2) {
                                 if (flag2) PathToImg(toImg, element).then(function(flag3) {
-                                    if (flag3) resolve(true);
+                                    if (flag3) {
+                                        resolve(true);
+                                        return;
+                                    }
                                 });
                             });
                         } else {
                             PathToImg(toImg, element).then(function(flag2) {
-                                if (flag2) resolve(true);
+                                if (flag2) {
+                                    resolve(true);
+                                    return;
+                                }
                             });
                         }
                     }
@@ -428,25 +465,37 @@ window.onload = function() {
             if (imgNum == 1 || imgNum == 2 || imgNum == 4 || imgNum == 7 || imgNum == 8) {
                 exitRightLittle(element).then(function(flag1) {
                     if (flag1) exitDownLittle(element).then(function(flag2) {
-                        if (flag2) resolve(true);
+                        if (flag2) {
+                            resolve(true);
+                            return;
+                        }
                     });
                 });
             } else if (imgNum == 3 || imgNum == 5 || imgNum == 6 || imgNum == 9 ) {
                 exitLeftLittle(element).then(function(flag1) {
                     if (flag1) exitDownLittle(element).then(function(flag2) {
-                        if (flag2) resolve(true);
+                        if (flag2) {
+                            resolve(true);
+                            return;
+                        }
                     });
                 });
             } else if (imgNum == 11 || imgNum == 12) {
                 exitLeftLittle(element).then(function(flag1) {
                     if (flag1) exitUpLittle(element).then(function(flag2) {
-                        if (flag2) resolve(true);
+                        if (flag2) {
+                            resolve(true);
+                            return;
+                        }
                     });
                 });
             } else if (imgNum == 10) {
                 exitRightLittle(element).then(function(flag1) {
                     if (flag1) exitUpLittle(element).then(function(flag2) {
-                        if (flag2) resolve(true);
+                        if (flag2) {
+                            resolve(true);
+                            return;
+                        }
                     });
                 });
             }
@@ -458,25 +507,37 @@ window.onload = function() {
             if (imgNum == 1 || imgNum == 2 || imgNum == 4 || imgNum == 7 || imgNum == 8) {
                 moveUpLittle(element).then(function(flag1) {
                     if (flag1) moveLeftLittle(element).then(function(flag2) {
-                        if (flag2) resolve(true);
+                        if (flag2) {
+                            resolve(true);
+                            return;
+                        }
                     });
                 });
             } else if (imgNum == 3 || imgNum == 5 || imgNum == 6 || imgNum == 9) {
                 moveUpLittle(element).then(function(flag1) {
                     if (flag1) moveRightLittle(element).then(function(flag2) {
-                        if (flag2) resolve(true);
+                        if (flag2) {
+                            resolve(true);
+                            return;
+                        }
                     });
                 });
             } else if (imgNum == 11 || imgNum == 12) {
                 moveDownLittle(element).then(function(flag1) {
                     if (flag1) moveRightLittle(element).then(function(flag2) {
-                        if (flag2) resolve(true);
+                        if (flag2) {
+                            resolve(true);
+                            return;
+                        }
                     });
                 });
             } else if (imgNum == 10) {
                 moveDownLittle(element).then(function(flag1) {
                     if (flag1) moveLeftLittle(element).then(function(flag2) {
-                        if (flag2) resolve(true);
+                        if (flag2) {
+                            resolve(true);
+                            return;
+                        }
                     });
                 });
             }
@@ -494,16 +555,23 @@ window.onload = function() {
             
             if (sub == 0) {
                 resolve(true);
+                return;
             } else if (sub == 1) {
                 if (posDirection) {
                     if (pathNum1 % 2) {
                         moveRightOneBlock(element).then(function(flag) {
-                            if (flag) resolve(true);
+                            if (flag) {
+                                resolve(true);
+                                return;
+                            }
                         });
                     } else {
                         moveLeftOneBlock(element).then(function(flag1) {
                             if (flag1) moveDownOneBlock(element).then(function(flag2) {
-                                if (flag2) resolve(true);
+                                if (flag2) {
+                                    resolve(true);
+                                    return;
+                                }
                             });
                         });
                     }
@@ -511,23 +579,35 @@ window.onload = function() {
                     if (pathNum1 % 2) {
                         moveRightOneBlock(element).then(function(flag1) {
                             if (flag1) moveUpOneBlock(element).then(function(flag2) {
-                                if (flag2) resolve(true);
+                                if (flag2) {
+                                    resolve(true);
+                                    return;
+                                }
                             });
                         });
                     } else {
                         moveLeftOneBlock(element).then(function(flag) {
-                            if (flag) resolve(true);
+                            if (flag) {
+                                resolve(true);
+                                return;
+                            }
                         });
                     }
                 }
             } else if (sub == 2) {
                 if (posDirection) {
                     moveDownOneBlock(element).then(function(flag) {
-                        if (flag) resolve(true);
+                        if (flag) {
+                            resolve(true);
+                            return;
+                        }
                     });
                 } else {
                     moveUpOneBlock(element).then(function(flag) {
-                        if (flag) resolve(true);
+                        if (flag) {
+                            resolve(true);
+                            return;
+                        }
                     });
                 }
             } else if (sub == 3) {
@@ -535,13 +615,19 @@ window.onload = function() {
                     if (pathNum1 % 2) {
                         moveDownOneBlock(element).then(function(flag1) {
                             if (flag1) moveRightOneBlock(element).then(function(flag2) {
-                                if (flag2) resolve(true);
+                                if (flag2) {
+                                    resolve(true);
+                                    return;
+                                }
                             });
                         });
                     } else {
                         moveLeftOneBlock(element).then(function(flag1) {
                             if (flag1) moveDownOneBlock(element).then(function(flag2) {
-                                if (flag2) resolve(true);
+                                if (flag2) {
+                                    resolve(true);
+                                    return;
+                                }
                             });
                         });
                     }
@@ -549,14 +635,20 @@ window.onload = function() {
                     if (pathNum2 % 2) {
                         moveUpOneBlock(element).then(function(flag1) {
                             if (flag1) moveLeftOneBlock(element).then(function(flag2) {
-                                if (flag2) resolve(true);
+                                if (flag2) {
+                                    resolve(true);
+                                    return;
+                                }
                             });
                         });
                     } else {
                         moveRightOneBlock(element).then(function(flag1) {
                             if (flag1) moveUpOneBlock(element).then(function(flag2) {
                                 if (flag2) moveUpOneBlock(element).then(function(flag3) {
-                                    if (flag3) resolve(true);
+                                    if (flag3) {
+                                        resolve(true);
+                                        return;
+                                    }
                                 });
                             });
                         });
@@ -566,13 +658,19 @@ window.onload = function() {
                 if (posDirection) {
                     moveDownOneBlock(element).then(function(flag1) {
                         if (flag1) moveDownOneBlock(element).then(function(flag2) {
-                            if (flag2) resolve(true);
+                            if (flag2) {
+                                resolve(true);
+                                return;
+                            }
                         });
                     });
                 } else {
                     moveUpOneBlock(element).then(function(flag1) {
                         if (flag1) moveUpOneBlock(element).then(function(flag2) {
-                            if (flag2) resolve(true);
+                            if (flag2) {
+                                resolve(true);
+                                return;
+                            }
                         });
                     });
                 }
@@ -581,7 +679,10 @@ window.onload = function() {
                     moveRightOneBlock(element).then(function(flag1) {
                         if (flag1) moveDownOneBlock(element).then(function(flag2) {
                             if (flag2) moveDownOneBlock(element).then(function(flag3) {
-                                if (flag3) resolve(true);
+                                if (flag3) {
+                                    resolve(true);
+                                    return;
+                                }
                             });
                         });
                     });
@@ -589,7 +690,10 @@ window.onload = function() {
                     moveLeftOneBlock(element).then(function(flag1) {
                         if (flag1) moveUpOneBlock(element).then(function(flag2) {
                             if (flag2) moveUpOneBlock(element).then(function(flag3) {
-                                if (flag3) resolve(true);
+                                if (flag3) {
+                                    resolve(true);
+                                    return;
+                                }
                             });
                         });
                     });
