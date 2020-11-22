@@ -11,7 +11,6 @@ var currentRequestKey;
 
 var myContentsWidth = 1200; // min 1200 (default width)
 
-var shoppingTogetherWith;
 
 
 // shopping together mode
@@ -82,17 +81,8 @@ function processTogetherMode(){
     }
 }
 
-// 필요없는듯?
-function toggleTogetherMode(){
-    if (shoppingTogetherWith == null) {
-        startTogetherMode();
-    } else {
-        quitTogetherMode();
-    }
-}
 
 function startTogetherMode() {
-    shoppingTogetherWith = friendId;
     updateUserDataToDB();
     traceFriendData(friendId);
     // show cursor
@@ -111,7 +101,6 @@ function quitTogetherMode() {
     stopFollowing();
     body_frame.style.visibility = 'hidden';
 
-    shoppingTogetherWith = null;
     updateUserDataToDB();
     stopTraceFriendData(friendId);
     // hide cursor
@@ -136,8 +125,9 @@ function traceTogetherModeState() { // always on
             quitTogetherMode();
         } else if ( togetherModeState == 'waiting' ) {
 
-        } else if ( togetherModeState == 'accept' ) {
-            messengerDB.child(currentRequestKey).set({
+        } else if ( togetherModeState.split(":")[0] == 'accept' ) {
+            var requestKey = togetherModeState.split(":")[1];
+            messengerDB.child(requestKey).set({
                 author: studentId,
                 type: "shopping_together_info",
                 string: "Accepted " + friendName + "'s request."
@@ -149,8 +139,9 @@ function traceTogetherModeState() { // always on
             });
             myTogetherModeDB.set('on');
             friendTogetherModeDB.set('on');
-        } else if ( togetherModeState == 'reject' ) {
-            messengerDB.child(currentRequestKey).set({
+        } else if ( togetherModeState.split(":")[0] == 'reject' ) {
+            var requestKey = togetherModeState.split(":")[1];
+            messengerDB.child(requestKey).set({
                 author: studentId,
                 type: "shopping_together_info",
                 string: "Rejected " + friendName + "'s request."
