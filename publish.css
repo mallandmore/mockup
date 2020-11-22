@@ -129,12 +129,6 @@ html {
   margin-left: auto;
   margin-right: auto;
 }
-#perfect_pixel2 {
-  position: relative;
-  width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-}
 
 #navigate_menu {
   position: relative;
@@ -542,6 +536,7 @@ html {
   margin-left: auto;
   margin-right: auto;
   text-align: left;
+  border-radius: 4px;
 
   font-family: 'Roboto', sans-serif;
   font-size: 14px;
@@ -642,6 +637,8 @@ html {
   margin-right: auto;
   text-align: left;
 
+  border-radius: 4px;
+  
   font-family: 'Roboto', sans-serif;
   font-size: 14px;
   font-style: normal;
