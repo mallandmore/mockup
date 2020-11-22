@@ -34,19 +34,38 @@ window.onload = function() {
 
     db.child('messenger').on('value', function(snapshot){
         snapshot.forEach(element => {
+            const wow = element.key;
             const id = element.child("author").val();
             const string = element.child("string").val();
             const type = element.child("type").val();
             const message = document.createElement("div");
             message.className = type;
             document.getElementById("messenger_body").appendChild(message);
-            if (id == friendId) {
-                console.log("w");
-                message.innerText = friendName + ": " + string;
-            } else if (id == studentId) {
-                message.innerText = "Me: " + string;
+            if (type == "shopping_together_request") {
+                message.innerHTML = "<div class = 'shopping_together_request_label'>" +
+                "Do you want to accept " + friendName + "'s request?" + "</div>" + 
+                "<div class = 'shopping_together_request_buttons'>" +
+                "<div class = 'shopping_together_request_button' id = 'shopping_together_request_yes'>" + "yes" +
+                "</div>" + "<div class = 'shopping_together_request_button' id = 'shopping_together_request_no'>" +
+                "no" + "</div>" + "</div>"
+                document.getElementById('shopping_together_request_yes').addEventListener('click', function(){
+                    db.child('friends').child(friendId).child('togetherModeState').set('on');
+                    message.className = "shopping_together_info";
+                    message.innerHTML = "Accepted " + friendName + "'s request.";
+                }, false)
+                document.getElementById('shopping_together_request_no').addEventListener('click', function(){
+                    db.child('friends').child(friendId).child('togetherModeState').set('off');
+                    message.className = "shopping_together_info";
+                    message.innerHTML = "Rejected " + friendName + "'s request.";
+                }, false)
+            } else {
+                if (id == friendId) {
+                    message.innerText = friendName + ": " + string;
+                } else if (id == studentId) {
+                    message.innerText = "Me: " + string;
+                }
             }
-
+            
             var objDiv = document.getElementById("messenger_body");
             objDiv.scrollTop = objDiv.scrollHeight; 
         });
