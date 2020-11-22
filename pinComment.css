@@ -1,15 +1,10 @@
-.comment_div {
-    display: inline-block;
-}
-
-
-
-.comment {
+.pinComment {
+    background: white;
     position: relative;
     width: 282px;
     border: 1px solid black;
 }
-.comment_thread {
+.pinComment_thread {
     padding-top: 12px;
     padding-left: 12px;
     padding-right: 12px;
@@ -17,39 +12,39 @@
     position: relative;
     border: 1px solid black;
 }
-.comment_thread_header {
+.pinComment_thread_header {
     position: relative;
     height: 32px;
     padding-bottom: 10px;
 }
-.comment_author_profile {
+.pinComment_author_profile {
     position: relative;
     width: 32px;
     height: 32px;
     display: inline;
     float: left;
 }
-.comment_author_info {
+.pinComment_author_info {
     position: relative;
     padding-left: 10px;
     display: inline;
     float: left;
 }
-.comment_author_name {
+.pinComment_author_name {
     position: relative;
     font-family: 'Roboto', sans-serif;
     font-size: 14px;
     font-style: normal;
     font-weight: 700;
 }
-.comment_time {
+.pinComment_time {
     position: relative;
     font-family: 'Roboto', sans-serif;
     font-size: 12px;
     font-style: normal;
     font-weight: 400;
 }
-.comment_edit {
+.pinComment_edit {
     position: relative;
     float: right;
     display: inline;
@@ -59,7 +54,7 @@
     padding-bottom: 6px;
     padding-left: 10px;
 }
-.comment_delete {
+.pinComment_delete {
     width: 20px;
     position: relative;
     float: right;
@@ -69,11 +64,12 @@
     padding-bottom: 6px;
     padding-left: 1-px;
 }
-.comment_input {
+.pinComment_input {
     position: relative;
     display: block;
+    display: inline;
 }
-.comment_text_input {
+.pinComment_text_input {
     position: relative;
     display: inline;
     width: 190px;
@@ -82,7 +78,7 @@
     font-style: normal;
     font-weight: 700;
 }
-.comment_text_readOnly {
+.pinComment_text_readOnly {
     position: relative;
     display: inline;
     word-wrap: break-word;
@@ -92,7 +88,7 @@
     font-style: normal;
     font-weight: 700;
 }
-.comment_text_input_enter {
+.pinComment_text_input_enter {
     position: relative;
     display: inline;
     float: right;
