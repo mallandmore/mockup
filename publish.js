@@ -35,6 +35,7 @@ window.onload = function() {
     });
 
     db.child('messenger').on('value', function(snapshot){
+        document.getElementById("messenger_body").innerHTML = '';
         snapshot.forEach(element => {
             const key = element.key;
             const id = element.child("author").val();
