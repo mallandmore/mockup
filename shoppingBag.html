@@ -13,6 +13,13 @@
         <script src="./togetherMode/getFriendState.js"></script>
         <script src="./togetherMode/updateUserState.js"></script>
         <script src="publish.js"></script>
+        <script>
+            if(isFollowing()){
+                document.getElementById('hardcodedImage').src="src/"+friendName+"bag.png";
+            } else {
+                document.getElementById('hardcodedImage').src="src/"+myName+"bag.png";
+            }
+        </script>
     </head>
 
     <body>
@@ -44,7 +51,7 @@
         <div id = "header_placeholder">
         </div>
         <div id = "perfect_pixel">
-            <img id = "hardcodedImage" src = "src/owenbag.png">
+            <img id = "hardcodedImage" src = "src/Owenbag.png">
         </div>
         <div id = "body_frame"></div>
         <div id = "statusBlock">
