@@ -11,7 +11,6 @@ var currentRequestKey;
 
 var myContentsWidth = 1200; // min 1200 (default width)
 
-var shoppingTogetherWith;
 
 
 // shopping together mode
@@ -82,17 +81,8 @@ function processTogetherMode(){
     }
 }
 
-// 필요없는듯?
-function toggleTogetherMode(){
-    if (shoppingTogetherWith == null) {
-        startTogetherMode();
-    } else {
-        quitTogetherMode();
-    }
-}
 
 function startTogetherMode() {
-    shoppingTogetherWith = friendId;
     updateUserDataToDB();
     traceFriendData(friendId);
     // show cursor
@@ -111,7 +101,6 @@ function quitTogetherMode() {
     stopFollowing();
     body_frame.style.visibility = 'hidden';
 
-    shoppingTogetherWith = null;
     updateUserDataToDB();
     stopTraceFriendData(friendId);
     // hide cursor

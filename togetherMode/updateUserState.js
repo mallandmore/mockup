@@ -42,8 +42,7 @@ function updateUserDataToDB() {
         sX : scrollX,
         WindowH : window.innerHeight,
         WindowW : Math.max(window.innerWidth, 1223),
-        following : followingFriend,
-        shopTogether : shoppingTogetherWith
+        following : followingFriend
     });
 }
 
