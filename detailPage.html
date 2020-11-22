@@ -1,0 +1,115 @@
+<html>
+    <head>
+        <title>MallandMore</title>
+        <meta
+            name = "viewport"
+            content = "user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width"
+        >
+        <style></style>
+        <script src = "https://www.gstatic.com/firebasejs/8.0.1/firebase.js"></script>
+        <link href = 'http://fonts.googleapis.com/css?family=Roboto' rel = 'stylesheet' type = 'text/css'>
+        <link rel = "stylesheet" href = "publish.css">
+        <script src="connectToFirebase.js"></script>
+        <script src="./togetherMode/getFriendState.js"></script>
+        <script src="./togetherMode/updateUserState.js"></script>
+        <script src="publish.js"></script>
+    </head>
+
+    <body>
+        <div id = "header">
+            <div class = "header_left" id = "header_left_1">
+                MEN
+            </div>
+            <div class = "header_left" id = "header_left_2">
+                WOMEN
+            </div>
+            <div class = "header_right" id = "header_right_1">
+                FRIENDS
+            </div>
+            <div class = "header_right" id = "header_right_2">
+                MY PAGE
+            </div>
+            <div class = "header_right" id = "header_right_3">
+                LOG OUT
+            </div>
+            <div class = "header_right" id = "header_right_4">
+                BAG
+            </div>
+            <div class = "header_right" id = "header_right_5">
+                SEARCH
+            </div>
+            <img id = "logo" src = "src/logo.png">
+        </div>
+
+        <div id = "header_placeholder">
+        </div>
+        <div id = "perfect_pixel">
+            <img id = "hardcodedImage" src = "src/detailPage.png">
+        </div>
+        <div id = "body_frame">
+        </div>
+        <div id = "messenger">
+            
+            <div id = "messenger_header">
+            </div>
+            <div id = "messenger_body">
+                <!-- <div class = "shopping_together_request">
+                    <div class = "shopping_together_request_label">
+                        Do you want to accept friend's request?
+                    </div>
+                    <div class = "shopping_together_request_buttons">
+                        <div class = "shopping_together_request_button" id = "shopping_together_request_yes">
+                            yes
+                        </div>
+                        <div class = "shopping_together_request_button" id = "shopping_together_request_no">
+                            no
+                        </div>
+                    </div>
+                </div> -->
+                <div class = "shopping_together_info">
+                    Shopping together!
+                </div>
+            </div>
+            <div id = "messenger_footer">
+                <input type="text" id="message_input" value="">
+            </div>
+
+        </div>
+        <div class="buttonsFloating hidden">
+            
+            <div class="flotingButton" id='startTogetherButton' type="button">
+                Shopping toghether
+            </div>
+
+            <div class="flotingButton"  id='followingButton' type="button">
+                Go to the location
+            </div>
+        </div>       
+        <div class = "pinComment">
+            <div class = "pinComment_thread">
+                <div class = "pinComment_thread_header">
+                    <img class = "pinComment_author_profile" src = "src/profile.png">
+                    <div class = "pinComment_author_info">
+                        <div class = "pinComment_author_name">
+                            Chani Jung
+                        </div>
+                        <div class = "pinComment_time">
+                            9:55 PM Nov 11
+                        </div>
+                    </div>
+                    <!-- <img class = "pinComment_edit" src = "src/modify.png">
+                    <img class = "pinComment_delete" src = "src/delete.png"> -->
+                </div>
+                <div class = "pinComment_input">
+                    <input class = "pinComment_text_input">
+                    <div class = "pinComment_text_input_enter">
+                        comment
+                    </div>
+                </div>
+            </div>
+        </div>       
+    </body>
+    <div id='friendCursor'>
+        <img src="src/cursor_friend.png" alt="">
+    </div>
+</html>

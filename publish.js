@@ -27,7 +27,6 @@ window.onload = function() {
                 // prepare shop together interface
                 document.getElementById('startTogetherButton').innerHTML = "Shopping together with " + friendName;
                 document.getElementById('startTogetherButton').style.visibility = "visible";
-
             }
         });
         document.getElementById('messenger_header').innerText = friendName;
@@ -40,9 +39,9 @@ window.onload = function() {
         document.getElementById("messenger_body").innerHTML = '';
         snapshot.forEach(element => {
             const key = element.key;
-            const sender = element.child("sender").val();
-            const receiver = element.child("receiver").val();
-            const string = element.child("string").val();
+            var sender = element.child("sender").val();
+            var receiver = element.child("receiver").val();
+            var string = element.child("string").val();
             const type = element.child("type").val();
             if (type == "shopping_together_request") {
                  if (sender == studentId) {
@@ -113,7 +112,30 @@ window.onload = function() {
                     document.getElementById("messenger_body").appendChild(message);
                     message.innerHTML = "This request is canceled.";
                 }
-            } else {
+            } else if (type == "comment") {
+                element.child('thread').forEach(elementDD => {
+                    sender = elementDD.child('sender').val();
+                    receiver = elementDD.child('receiver').val();
+                    string = elementDD.child('string').val();
+                })
+                if (sender == studentId) {
+                    const top = element.child('top').val();
+                    const left = element.child('left').val();
+                    const message = document.createElement("div");
+                    message.className = type;
+                    document.getElementById("messenger_body").appendChild(message);
+                    message.innerText = "Me: " + string;
+                    message.addEventListener('click', function(){
+                        window.location.href = 'pinComment.html?studentId=' + studentId + "&groupId=" + groupId;
+                        window.scrollTo(0, top - window.innerHeight * 0.2);
+                    }, false);
+                } else if (sender == friendId) {
+                    const message = document.createElement("div");
+                    message.className = type;
+                    document.getElementById("messenger_body").appendChild(message);
+                    message.innerText = friendName + ": " + string;
+                }
+            } else if (type == "chat") {
                 if (sender == studentId) {
                     const message = document.createElement("div");
                     message.className = type;
