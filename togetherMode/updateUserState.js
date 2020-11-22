@@ -4,7 +4,21 @@ var positionTop = 0;
 var scrollY = window.pageYOffset;
 var scrollX = window.pageXOffset; 
 
-window.addEventListener('load', function() {
+var followingFriend;
+
+function checkPreviousFollowingState(){
+    firebase.database().ref('/data/' + getParameterByName('studentId') + '/following').once('value').then(function(snapshot){
+        followingFriend = snapshot.val();
+    });
+    console.log(followingFriend);
+    if (followingFriend != null) {
+        // alert(followingFriend);
+        // console.log(followingFriend);
+        startFollowing(followingFriend);
+    }
+}
+
+function addUserMovementListener(){
     // event listener
     if ( document.addEventListener ) {
         document.addEventListener("mousemove", updateCursorPosition, false);
@@ -21,7 +35,9 @@ window.addEventListener('load', function() {
     } else {
         window.onscroll = updateScrollPosition;
     }
-});
+}
+
+
 
 // update user cursor position
 function updateCursorPosition(x) {
@@ -35,19 +51,19 @@ function updateScrollPosition(x) {
     updateUserDataToDB();
 }
 function updateUserDataToDB() {
-    firebase.database().ref('CursorPosition/' + studentId + '/').set({
+    firebase.database().ref('/data/' + studentId + '/position/').set({
         pX : positionLeft,
         pY : positionTop,
         sY : scrollY,
         sX : scrollX,
         WindowH : window.innerHeight,
         WindowW : Math.max(window.innerWidth, 1223),
-        following : followingFriend
     });
 }
+function updateUserFollowingDB(){
+    firebase.database().ref('/data/' + studentId + '/following/').set(followingFriend);
+}
 
-
-var followingFriend = null;
 
 // following fucntions 
 function stopFollowing(){
@@ -61,7 +77,7 @@ function stopFollowing(){
     document.getElementById('status').style.visibility = 'hidden';
     document.getElementById('statusRemark').style.visibility = 'hidden';
     document.getElementById('body_frame').style.visibility = "hidden";
-    updateUserDataToDB();
+    updateUserFollowingDB();
 }
 function startFollowing(fid){
     followingFriend = fid;
@@ -74,7 +90,7 @@ function startFollowing(fid){
     document.getElementById('statusRemark').style.visibility = 'visible';
     document.getElementById('body_frame').style.borderColor = "#4580ff";
     document.getElementById('body_frame').style.visibility = "visible";
-    updateUserDataToDB();
+    updateUserFollowingDB();
 }
 function isFollowing() {
     return followingFriend;

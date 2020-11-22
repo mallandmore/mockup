@@ -24,6 +24,7 @@ function manageTogetherMode(){
 
     // quit together mode
     if (togetherModeState == 'on') {
+        stopFollowing();
 
         // send a report to me that together mode is off.
         messengerDB.push({
@@ -89,6 +90,9 @@ function quitTogetherMode() {
     // quit following mode
     stopFollowing();
     body_frame.style.visibility = 'hidden';
+    document.getElementById('status').style.visibility = 'hidden';
+    document.getElementById('statusRemark').style.visibility = 'hidden';
+    
 
     // updateUserDataToDB();
 
@@ -167,43 +171,44 @@ var friendWindowW = 0;
 var friendIsFollowing = null;
 
 function stopTraceFriendData(fid) {
-    firebase.database().ref('/CursorPosition/'+ fid +'/pX/').off('value');
-    firebase.database().ref('/CursorPosition/'+ fid +'/pY/').off('value');
-    firebase.database().ref('/CursorPosition/'+ fid +'/sX/').off('value');
-    firebase.database().ref('/CursorPosition/'+ fid +'/sY/').off('value');
-    firebase.database().ref('/CursorPosition/'+ fid +'/WindowH/').off('value');
-    firebase.database().ref('/CursorPosition/'+ fid +'/WindowW/').off('value');
-    firebase.database().ref('/CursorPosition/'+ studentId +'/WindowW/').off('value');
-    firebase.database().ref('/CursorPosition/'+ fid +'/following/').off('value');
+    firebase.database().ref('/data/' + fid + '/position/pX/').off('value');
+    firebase.database().ref('/data/' + fid + '/position/pY/').off('value');
+    firebase.database().ref('/data/' + fid + '/position/sX/').off('value');
+    firebase.database().ref('/data/' + fid + '/position/sY/').off('value');
+    firebase.database().ref('/data/' + fid + '/position/WindowH/').off('value');
+    firebase.database().ref('/data/' + fid + '/position/WindowW/').off('value');
+    firebase.database().ref('/data/' + studentId + '/position/WindowW/').off('value');
+    firebase.database().ref('/data/' + fid + '/following/').off('value');
 }
 
 function traceFriendData(fid){
+    // alert(fid);
     // get realtime data from firebase
-    firebase.database().ref('/CursorPosition/'+ fid +'/pX/').on('value', function(posX){
+    firebase.database().ref('/data/' + fid + '/position/pX/').on('value', function(posX){
         friendPositionX = posX.val() - friendWindowW / 2 + myContentsWidth / 2;
         renderFriendCursor();
     });
-    firebase.database().ref('/CursorPosition/'+ fid +'/pY/').on('value', function(posY){
+    firebase.database().ref('/data/' + fid + '/position/pY/').on('value', function(posY){
         friendPositionY = posY.val();
         renderFriendCursor();
     });
-    firebase.database().ref('/CursorPosition/'+ fid +'/sX/').on('value', function(scrX){
+    firebase.database().ref('/data/' + fid + '/position/sX/').on('value', function(scrX){
         friendScrollX = scrX.val();
         renderFriendCursor();
     });
-    firebase.database().ref('/CursorPosition/'+ fid +'/sY/').on('value', function(scrY){
+    firebase.database().ref('/data/' + fid + '/position/sY/').on('value', function(scrY){
         friendScrollY = scrY.val();
         renderFriendCursor();
     });
-    firebase.database().ref('/CursorPosition/'+ fid +'/WindowH/').on('value', function(height){
+    firebase.database().ref('/data/' + fid + '/position/WindowH/').on('value', function(height){
         friendWindowH = height.val();
         renderFriendCursor();
     });
-    firebase.database().ref('/CursorPosition/'+ fid +'/WindowW/').on('value', function(width){
+    firebase.database().ref('/data/' + fid + '/position/WindowW/').on('value', function(width){
         friendWindowW = width.val();
         renderFriendCursor();
     });
-    firebase.database().ref('/CursorPosition/'+ studentId +'/WindowW/').on('value', function(width){
+    firebase.database().ref('/data/' + studentId + '/position/WindowW/').on('value', function(width){
         myContentsWidth = width.val();
     });
 
@@ -214,7 +219,7 @@ function traceFriendData(fid){
     followingFrame.style.height = document.body.clientHeight - 70;
 
     // trace friend's following state
-    firebase.database().ref('/CursorPosition/'+ fid +'/following/').on('value', function(state){
+    firebase.database().ref('/data/' + fid + '/following/').on('value', function(state){
         friendIsFollowing = state.val();
 
         if(friendIsFollowing == studentId){
@@ -238,7 +243,7 @@ function traceFriendData(fid){
     });
 
 
-    firebase.database().ref('/CursorPosition/'+ studentId +'/following/').on('value', function(state){
+    firebase.database().ref('/data/' + studentId + '/following/').on('value', function(state){
         if(state.val() == null) {
             stopFollowing();
         }
@@ -253,18 +258,18 @@ function traceFriendData(fid){
         btn.attachEvent('onclick', event => goToFriendLocation(fid));
     }
 
-    function goToFriendLocation(fid) {
-        if ( friendIsFollowing != null ) {
-            // drop follower
-            firebase.database().ref('/CursorPosition/'+ fid +'/following/').set(null);
-        }
-        startFollowing(fid);
-    }
-
     window.addEventListener('resize', function(event){
         followingFrame.style.width = Math.max(window.innerWidth, 1223)-23;
         followingFrame.style.height = window.innerHeight;
     });
+}
+
+function goToFriendLocation(fid) {
+    if ( friendIsFollowing != null ) {
+        // drop follower
+        firebase.database().ref('/data/' + fid + '/following/').set(null);
+    }
+    startFollowing(fid);
 }
 
 function renderFriendCursor() {
