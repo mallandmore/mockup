@@ -1,10 +1,19 @@
+// detailPage.html에다가 간단하게 student id만 onlineUsers/ 에 push하는 js코드 만들어서 <head>에 삽입!!
+
 var studentId = getParameterByName('studentId');
 
 var userData = firebase.database().ref('/onlineUsers/').push({
     uid : studentId
 }).key;
 
-window.onload = function() {
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+window.addEventListener('load', function() {
     var avenueRows = document.getElementsByClassName('avenue_row');
     var avenueColumns = document.getElementsByClassName('avenue_col');
 
@@ -261,13 +270,6 @@ window.onload = function() {
             uid: studentId
         });
         rootRef.remove();
-    }
-
-    function getParameterByName(name) {
-        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-            results = regex.exec(location.search);
-        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
     }
     
     function move(element, direction, distance, duration) {
@@ -708,9 +710,9 @@ window.onload = function() {
                 }
             }
         });
-    }    
-    
-}
+    }            
+})
+
 
 window.addEventListener('beforeunload', function(e) {
     firebase.database().ref('/onlineUsers/'+userData).remove();
