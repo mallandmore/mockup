@@ -14,11 +14,37 @@
         <script src="./togetherMode/updateUserState.js"></script>
         <script src="publish.js"></script>
         <script>
-            if(isFollowing()){
-                document.getElementById('hardcodedImage').src="src/"+friendName+"bag.png";
-            } else {
-                document.getElementById('hardcodedImage').src="src/"+myName+"bag.png";
-            }
+            window.addEventListener('load', function() {
+                var uid = getParameterByName('studentId');
+                var gid = getParameterByName('groupId');
+                var name;
+                var followingFalg = false;
+                firebase.database().ref('/' + gid + '/friends/' + uid + '/name/').once('value').then(function(snapshot){
+                    name = snapshot.val();
+                    firebase.database().ref('/data/'+ uid + '/following/').once('value').then(function(snapshot){
+                        if(snapshot.val() != null){
+                            followingFalg = true;
+                        }
+                        console.log(followingFalg);
+                        loadPage();
+                    });
+                });
+                function loadPage(){
+                    if(name == 'Owen' && !followingFalg){
+                        document.getElementById('hardcodedImage').src="src/Owenbag.png";
+                        console.log("src/"+friendName+"bag.png");
+                    } else if(name == 'Owen' && followingFalg){
+                        document.getElementById('hardcodedImage').src="src/Sallybag.png";
+                        console.log("src/"+myName+"bag.png");
+                    } else if(name == 'Sally' && !followingFalg){
+                        document.getElementById('hardcodedImage').src="src/Sallybag.png";
+                        console.log("src/"+myName+"bag.png");
+                    } else if(name == 'Sally' && followingFalg){
+                        document.getElementById('hardcodedImage').src="src/Owenbag.png";
+                        console.log("src/"+myName+"bag.png");
+                    }  
+                }
+            });
         </script>
     </head>
 
@@ -51,13 +77,9 @@
         <div id = "header_placeholder">
         </div>
         <div id = "perfect_pixel">
-            <img id = "hardcodedImage" src = "src/Owenbag.png">
+            <img id = "hardcodedImage" src = "src/loading.gif">
         </div>
         <div id = "body_frame"></div>
-        <div id = "statusBlock">
-            <div id = "status">status</div>
-            <div id = "statusRemark">Escape by scrolling.</div>
-        </div>
         <div id = "statusBlock">
             <div id = "status">status</div>
             <div id = "statusRemark">Escape by scrolling.</div>
@@ -95,10 +117,6 @@
                     </div>
                     <!-- <img class = "pinComment_edit" src = "src/modify.png">
                     <img class = "pinComment_delete" src = "src/delete.png"> -->
-                </div>
-    
-                <div class="flotingButton"  id='followingButton' type="button">
-                    Go to the location
                 </div>
             </div>       
         </div>   
