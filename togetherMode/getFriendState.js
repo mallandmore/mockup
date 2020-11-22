@@ -6,6 +6,7 @@ var friendScrollX = 0;
 var friendWindowH = 0;
 var friendWindowW = 0;
 var friendIsFollowing = null;
+var friendTogetherModeState;
 
 var myContentsWidth = 1200; // min 1200 (default width)
 
@@ -15,12 +16,31 @@ var shoppingTogetherWith;
 window.addEventListener('load', function() {
     var startTogetherBtn = document.getElementById('startTogetherButton');
     if (startTogetherBtn.addEventListener) {
-        startTogetherBtn.addEventListener("click", toggleTogetherMode, false);
+        startTogetherBtn.addEventListener("click", requsetToTogetherMode, false);
     }
     else if (startTogetherBtn.attachEvent) {
-        startTogetherBtn.attachEvent('onclick', toggleTogetherMode);
+        startTogetherBtn.attachEvent('onclick', requsetToTogetherMode);
     }
 });
+
+function requsetToTogetherMode(){
+    if (friendTogetherModeState == 'on') {
+        alert('nope!');
+        return;
+    } else if (friendTogetherModeState == 'waiting') { // friend already request to me
+        // auto start
+    }
+    startTogetherButton.style.background = 'gray';
+    startTogetherButton.style.color = 'white';
+    startTogetherButton.innerHTML = 'Sent a request to '+ friendName;
+    startTogetherButton.style.pointerEvents = 'none';
+
+    firebase.database().ref('1/messenger/').push({
+        author : studentId,
+        type : "shopping_together_request"
+    });
+}
+
 function toggleTogetherMode(){
     if (shoppingTogetherWith == null) {
         startTogetherMode();
@@ -35,12 +55,16 @@ function startTogetherMode() {
     // show cursor
     friendCursor.style.visibility = 'visible';
     // change button text
+    startTogetherButton.style.background = 'white';
+    startTogetherButton.style.color = '#444444';
     startTogetherButton.innerHTML = "Quit together mode";
+    startTogetherButton.style.pointerEvents = 'auto';
     // show go to function
     followingButton.innerHTML = "Go to " + friendName;
     followingButton.style.visibility = 'visible';
 }
 function quitTogetherMode() {
+    // quit following mode
     stopFollowing();
     body_frame.style.visibility = 'hidden';
 
@@ -54,15 +78,28 @@ function quitTogetherMode() {
     // hide go to function
     followingButton.style.visibility = 'hidden';
 }
-function traceFriendRequest(fid) { // always on
-    firebase.database().ref('/CursorPosition/'+ fid +'/shopTogether/').on('value', function(member){
-        partyMember = member.val();
-        if (partyMember == studentId && shoppingTogetherWith == null) {
-            startTogetherMode();
-        } else if (partyMember == null) {
+
+function traceTogetherModeState(fid) { // always on
+    firebase.database().ref('/'+ groupId +'/' + fid + '/togetherModeState/').on('value', function(state){
+        friendTogetherModeState = state.val();
+        if( friendTogetherModeState == 'off' ) {
             quitTogetherMode();
+        } else if ( stfriendTogetherModeStateate == 'waiting' ) {
+
+        } else if ( friendTogetherModeState == 'on' ) {
+            // if shoppingTogetherWith == null
+            startTogetherMode();
         }
     });
+
+    // firebase.database().ref('/CursorPosition/'+ fid +'/shopTogether/').on('value', function(member){
+    //     partyMember = member.val();
+    //     if (partyMember == studentId && shoppingTogetherWith == null) {
+    //         startTogetherMode();
+    //     } else if (partyMember == null) {
+    //         quitTogetherMode();
+    //     }
+    // });
 }
 
 
