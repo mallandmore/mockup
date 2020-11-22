@@ -1,3 +1,6 @@
+// const defaultLink = 'file:///Users/oooo/Documents/GitHub/mockup/';
+const defaultLink = 'https://mallandmore.github.io/mockup/';
+
 // variables for user cursor postion
 var positionLeft = 0;
 var positionTop = 0;
@@ -113,9 +116,9 @@ function getParameterByName(name) {
 
 
 function goToLink(linkid) {
-    // const defaultLink = 'file:///Users/oooo/Documents/GitHub/mockup/';
-    const defaultLink = 'https://mallandmore.github.io/mockup/';
-
+    if(isFollowing){
+        stopFollowing();
+    }
     var newPage = defaultLink + 'detailPage.html';
     updateUserUrlDB(newPage);
     window.location.href = newPage + '?groupId=' + groupId + '&studentId=' + studentId ;

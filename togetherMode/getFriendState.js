@@ -232,6 +232,7 @@ function traceFriendData(fid){
 
         if(friendIsFollowing == studentId){
             // friend start following me
+            document.getElementById('startTogetherButton').style.visibility = 'visible';
             document.getElementById('status').innerHTML = friendName + ' is following you now';
             document.getElementById('status').style.background = '#11D275';
             document.getElementById('status').style.visibility = 'visible';
