@@ -119,7 +119,7 @@ function goToLink(linkid) {
     if(isFollowing()){
         stopFollowing();
     }
-    var newPage = defaultLink + 'detailPage.html';
+    var newPage = defaultLink + linkid;
     updateUserUrlDB(newPage);
     window.location.href = newPage + '?groupId=' + groupId + '&studentId=' + studentId ;
 }
