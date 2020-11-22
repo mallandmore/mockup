@@ -32,12 +32,22 @@ function processTogetherMode(){
 
     // quit together mode
     if (togetherModeState == 'on') {
+        messengerDB.push({
+            author: studentId,
+            type: "shopping_together_info",
+            string: "Finish shopping with " + friendId
+        });
+        messengerDB.push({
+            author: friendId,
+            type: "shopping_together_info",
+            string: "Finish shopping with " + studentId
+        });
         myTogetherModeDB.set('off');
         friendTogetherModeDB.set('off');
-    } 
-    
-    // user should cancel .... 
-    else if (togetherModeState == 'waiting') { 
+    }
+
+    // user should cancel ....
+    else if (togetherModeState == 'waiting') {
 
         myTogetherModeDB.set('cancle');
         startTogetherButton.style.background = 'white';
@@ -46,28 +56,33 @@ function processTogetherMode(){
 
         messengerDB.child(currentRequestKey).set({
             author: "all",
-            type: "shopping_together_info", 
+            type: "shopping_together_info",
             string: "This request is canceled."
         });
-    } 
-    
-    // send requset for together mode 
+    }
+
+    // send requset for together mode
     else if (togetherModeState == 'off') {
 
         myTogetherModeDB.set('waiting');
         startTogetherButton.style.background = 'gray';
         startTogetherButton.style.color = 'white';
         startTogetherButton.innerHTML = 'Cancle the request to '+ friendName;
-        
+
         // send a request
-        currentRequestKey = firebase.database().ref('1/messenger/').push({
+        currentRequestKey = messengerDB.push({
             author : studentId,
             type : "shopping_together_request"
+        });
+        messengerDB.push({
+            author : studentId,
+            type : "shopping_together_info",
+            string: "Sent a request to "+ friendName
         });
     }
 }
 
-// 필요없는듯? 
+// 필요없는듯?
 function toggleTogetherMode(){
     if (shoppingTogetherWith == null) {
         startTogetherMode();
@@ -121,19 +136,29 @@ function traceTogetherModeState() { // always on
             quitTogetherMode();
         } else if ( togetherModeState == 'waiting' ) {
 
-        } else if ( togetherModeState == 'accept' ) { 
+        } else if ( togetherModeState == 'accept' ) {
             messengerDB.child(currentRequestKey).set({
                 author: studentId,
-                type: "shopping_together_info", 
-                string: "Accepted " + friendName + "'s request." 
+                type: "shopping_together_info",
+                string: "Accepted " + friendName + "'s request."
+            });
+            messengerDB.push({
+                author: "all",
+                type: "shopping_together_info",
+                string: "Shopping together!"
             });
             myTogetherModeDB.set('on');
             friendTogetherModeDB.set('on');
-        } else if ( togetherModeState == 'reject' ) { 
-            messengerDB.child(currentRequestKey).set({ 
+        } else if ( togetherModeState == 'reject' ) {
+            messengerDB.child(currentRequestKey).set({
                 author: studentId,
-                type: "shopping_together_info", 
-                string: "Rejected " + friendName + "'s request." 
+                type: "shopping_together_info",
+                string: "Rejected " + friendName + "'s request."
+            });
+            messengerDB.push({
+                author: friendId,
+                type: "shopping_together_info",
+                string: "My request is rejected."
             });
             myTogetherModeDB.set('off');
             friendTogetherModeDB.set('off');
@@ -175,7 +200,7 @@ function traceFriendData(fid){
         myContentsWidth = width.val();
     });
 
-    
+
     // prepare frame for following mode
     var followingFrame = document.getElementById('body_frame');
     followingFrame.style.width = Math.max(window.innerWidth, 1223)-24;
@@ -209,7 +234,7 @@ function traceFriendData(fid){
             startFollowing(fid);
         }
     }
-    
+
     window.addEventListener('resize', function(event){
         followingFrame.style.width = Math.max(window.innerWidth, 1223)-23;
         followingFrame.style.height = window.innerHeight;
@@ -224,7 +249,7 @@ function stopTraceFriendData(fid) {
     firebase.database().ref('/CursorPosition/'+ fid +'/WindowH/').off('value');
     firebase.database().ref('/CursorPosition/'+ fid +'/WindowW/').off('value');
     firebase.database().ref('/CursorPosition/'+ studentId +'/WindowW/').off('value');
-    firebase.database().ref('/CursorPosition/'+ fid +'/following/').off('value');  
+    firebase.database().ref('/CursorPosition/'+ fid +'/following/').off('value');
 }
 
 function renderFriendCursor() {
@@ -248,13 +273,13 @@ function renderFriendCursor() {
 
         var dH = friendWindowH - window.innerHeight;
         var percentH = 1 - ( (friendWindowH - friendPositionY) / friendWindowH );
-        
+
         window.scrollTo(friendScrollX + dW * percentW, friendScrollY + dH * percentH);
     }
 }
 
 
-        // THINGS TO DO 
+        // THINGS TO DO
         // 0. check the friend's state -> if following other, Deny it.
         // 1. show the current state (waiting for permission, accept, expried)
         // 2. if friend allows the requset, start the following mode.

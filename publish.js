@@ -52,10 +52,10 @@ window.onload = function() {
                     "</div>" + "<div class = 'shopping_together_request_button' id = 'shopping_together_request_no'>" +
                     "no" + "</div>" + "</div>"
                     document.getElementById('shopping_together_request_yes').addEventListener('click', function(){
-                        db.child('friends').child(studentId).child('togetherModeState').set('accept:' + key);
+                        db.child('friends').child(studentId).child('togetherModeState').set('accept');
                     }, false);
                     document.getElementById('shopping_together_request_no').addEventListener('click', function(){
-                        db.child('friends').child(studentId).child('togetherModeState').set('reject:' + key);
+                        db.child('friends').child(studentId).child('togetherModeState').set('reject');
                     }, false);
                 }
             } else if (type == "shopping_together_info") {
