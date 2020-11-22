@@ -18,28 +18,30 @@
                 var uid = getParameterByName('studentId');
                 var gid = getParameterByName('groupId');
                 var name;
-                var followingFalg = false;
+                var followingFlag = false;
                 firebase.database().ref('/' + gid + '/friends/' + uid + '/name/').once('value').then(function(snapshot){
                     name = snapshot.val();
                     firebase.database().ref('/data/'+ uid + '/following/').once('value').then(function(snapshot){
                         if(snapshot.val() != null){
-                            followingFalg = true;
+                            followingFlag = true;
                         }
-                        console.log(followingFalg);
+                        console.log(followingFlag);
                         loadPage();
                     });
                 });
                 function loadPage(){
-                    if(name == 'Owen' && !followingFalg){
+                    if(name == 'Owen' && !followingFlag){
                         document.getElementById('hardcodedImage').src="src/Owenbag.png";
                         console.log("src/"+friendName+"bag.png");
-                    } else if(name == 'Owen' && followingFalg){
+                    } else if(name == 'Sally' && !followingFlag){
                         document.getElementById('hardcodedImage').src="src/Sallybag.png";
                         console.log("src/"+myName+"bag.png");
-                    } else if(name == 'Sally' && !followingFalg){
+                    } else if(name == 'Owen' && followingFlag){
+                        
                         document.getElementById('hardcodedImage').src="src/Sallybag.png";
                         console.log("src/"+myName+"bag.png");
-                    } else if(name == 'Sally' && followingFalg){
+                    } else if(name == 'Sally' && followingFlag){
+
                         document.getElementById('hardcodedImage').src="src/Owenbag.png";
                         console.log("src/"+myName+"bag.png");
                     }  
