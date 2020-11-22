@@ -54,13 +54,16 @@ function stopFollowing(){
     if (followingFriend == null) return;
 
     followingFriend = null;
-    document.getElementById('followingButton').innerHTML = "go to the loaction";
+    followingButton.style.pointerEvents = "inherit"
+    followingButton.innerHTML = "Go to " + friendName;
+
     document.getElementById('body_frame').style.visibility = "hidden";
     updateUserDataToDB();
 }
 function startFollowing(fid){
     followingFriend = fid;
-    document.getElementById('followingButton').innerHTML = "with ";
+    followingButton.style.pointerEvents = "none"
+    followingButton.innerHTML = "Going around with " + friendName + " now ";
 
     document.getElementById('body_frame').style.borderColor = "blue";
     document.getElementById('body_frame').style.visibility = "visible";
