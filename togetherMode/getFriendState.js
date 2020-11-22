@@ -32,14 +32,7 @@ function processTogetherMode(){
     // quit together mode
     if (togetherModeState == 'on') {
         messengerDB.push({
-            author: studentId,
-            type: "shopping_together_info",
-            string: "Finish shopping with " + friendId
-        });
-        messengerDB.push({
-            author: friendId,
-            type: "shopping_together_info",
-            string: "Finish shopping with " + studentId
+            type: "shopping_together_end"
         });
         myTogetherModeDB.set('off');
         friendTogetherModeDB.set('off');
@@ -47,16 +40,18 @@ function processTogetherMode(){
 
     // user should cancel ....
     else if (togetherModeState == 'waiting') {
+        console.log(currentRequestKey);
 
         myTogetherModeDB.set('off');
         startTogetherButton.style.background = 'white';
         startTogetherButton.style.color = '#444444';
         startTogetherButton.innerHTML = "Shopping together with " + friendName;
 
+
         messengerDB.child(currentRequestKey).set({
-            author: "all",
-            type: "shopping_together_info",
-            string: "This request is canceled."
+            sender: studentId,
+            receiver: friendId,
+            type: "shopping_together_cancel"
         });
     }
 
@@ -70,14 +65,10 @@ function processTogetherMode(){
 
         // send a request
         currentRequestKey = messengerDB.push({
-            author : studentId,
-            type : "shopping_together_request"
-        });
-        messengerDB.push({
-            author : studentId,
-            type : "shopping_together_info",
-            string: "Sent a request to "+ friendName
-        });
+            sender: studentId,
+            receiver: friendId,
+            type: "shopping_together_request"
+        }).key;
     }
 }
 
@@ -128,28 +119,21 @@ function traceTogetherModeState() { // always on
         } else if ( togetherModeState.split(":")[0] == 'accept' ) {
             var requestKey = togetherModeState.split(":")[1];
             messengerDB.child(requestKey).set({
-                author: studentId,
-                type: "shopping_together_info",
-                string: "Accepted " + friendName + "'s request."
+                sender: studentId,
+                receiver: friendId,
+                type: "shopping_together_accept"
             });
             messengerDB.push({
-                author: "all",
-                type: "shopping_together_info",
-                string: "Shopping together!"
+                type: "shopping_together_start"
             });
             myTogetherModeDB.set('on');
             friendTogetherModeDB.set('on');
         } else if ( togetherModeState.split(":")[0] == 'reject' ) {
             var requestKey = togetherModeState.split(":")[1];
             messengerDB.child(requestKey).set({
-                author: studentId,
-                type: "shopping_together_info",
-                string: "Rejected " + friendName + "'s request."
-            });
-            messengerDB.push({
-                author: friendId,
-                type: "shopping_together_info",
-                string: "My request is rejected."
+                sender: studentId,
+                receiver: friendId,
+                type: "shopping_together_reject"
             });
             myTogetherModeDB.set('off');
             friendTogetherModeDB.set('off');
