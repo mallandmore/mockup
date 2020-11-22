@@ -530,7 +530,7 @@ html {
 
 .shopping_together_request {
   position: relative;
-  width: auto;
+  width: 190px;
   height: auto;
   display: block;
   margin-left: auto;
@@ -586,7 +586,7 @@ html {
 
 .shopping_together_info {
   position: relative;
-  width: auto;
+  width: 190px;
   height: auto;
   display: block;
   margin-left: auto;
@@ -617,17 +617,24 @@ html {
   background: #2363ec;
   color: white;
 }
+.message_wrap {
+  position: relative;
+  width: 200px;
+  height: fit-content;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  float: left;
+}
 
 .comment {
   position: relative;
-  width: auto;
+  width: 190px;
   height: auto;
   display: block;
   margin-left: auto;
   margin-right: auto;
   text-align: left;
-  word-wrap: break-word;
-
 
   font-family: 'Roboto', sans-serif;
   font-size: 14px;
@@ -649,11 +656,9 @@ html {
 
 .chat {
   position: relative;
-  width: auto;
+  width: fit-content;
+  max-width: 170px;
   height: auto;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
   text-align: left;
   word-wrap: break-word;
 
@@ -664,15 +669,15 @@ html {
   line-height: 16px;
   letter-spacing: 0em;
 
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 12px;
+  padding-right: 12px;
   margin-top: 5px;
   margin-bottom: 5px;
   margin-left: 5px;
   margin-right: 5px;
-  border: 1px solid red;
+  border: 1px solid black;
 }
 
 #messenger_footer {
