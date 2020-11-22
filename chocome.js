@@ -130,8 +130,8 @@ window.onload = function() {
                     const facingDir = childSnapshot.val().direction;
                     const movingOrNot = childSnapshot.val().isMoving;
                     const movingTime = childSnapshot.val().movingStartTime;
-                    const drawnOrNot = childSnapshot.val().alreadyDrawn;
-                    if (!drawnOrNot){
+                    //const drawnOrNot = childSnapshot.val().alreadyDrawn;
+                    if (document.getElementById(childSnapshot.key) == null){
                         if (insertionTime > movingTime && movingOrNot) {
                             var otherHuman = document.createElement("img");
                             otherHuman.src = "src/human.gif";
@@ -148,7 +148,7 @@ window.onload = function() {
                             otherHuman.setAttribute('key', childSnapshot.key);
                             otherHuman.id = childSnapshot.key;
                             document.body.appendChild(otherHuman);
-                            firebase.database().ref('/chocome/'+childSnapshot.key).update({alreadyDrawn : true});
+                            //firebase.database().ref('/chocome/'+childSnapshot.key).update({alreadyDrawn : true});
                         } else if (!movingOrNot) {
                             var otherHuman = document.createElement("img");
                             otherHuman.src = "src/human.gif";
@@ -170,7 +170,7 @@ window.onload = function() {
                             otherHuman.setAttribute('key', childSnapshot.key);
                             otherHuman.id = childSnapshot.key;
                             document.body.appendChild(otherHuman);
-                            firebase.database().ref('/chocome/'+childSnapshot.key).update({alreadyDrawn : true});
+                            //firebase.database().ref('/chocome/'+childSnapshot.key).update({alreadyDrawn : true});
                         }
                     }
                 }
@@ -187,7 +187,7 @@ window.onload = function() {
             direction : randDirection,
             userId : studentId,
             movingStartTime : 0,
-            alreadyDrawn : false
+            //alreadyDrawn : false
         }).key;
         return newChocome;
     }
