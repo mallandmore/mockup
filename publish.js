@@ -42,17 +42,26 @@ window.onload = function() {
             var sender = element.child("sender").val();
             var receiver = element.child("receiver").val();
             var string = element.child("string").val();
+            var time = element.child("time").val();
             const type = element.child("type").val();
             if (type == "shopping_together_request") {
                  if (sender == studentId) {
                     const message = document.createElement("div");
                     message.className = "shopping_together_info";
-                    document.getElementById("messenger_body").appendChild(message);
+                    const message_wrap = document.createElement("div");
+                    message_wrap.className = "message_wrap";
+                    message_wrap.style.marginLeft = "0px";
+                    message_wrap.style.marginRight = "0px";
+                    document.getElementById("messenger_body").appendChild(message_wrap).appendChild(message);
                     message.innerHTML = "Sent a request to " + friendName;
                 } else if (receiver == studentId) {
                     const message = document.createElement("div");
                     message.className = type;
-                    document.getElementById("messenger_body").appendChild(message);
+                    const message_wrap = document.createElement("div");
+                    message_wrap.className = "message_wrap";
+                    message_wrap.style.marginLeft = "0px";
+                    message_wrap.style.marginRight = "0px";
+                    document.getElementById("messenger_body").appendChild(message_wrap).appendChild(message);
                     message.innerHTML = "<div class = 'shopping_together_request_label'>" +
                     "Do you want to accept " + friendName + "'s request?" + "</div>" + 
                     "<div class = 'shopping_together_request_buttons'>" +
@@ -67,49 +76,65 @@ window.onload = function() {
                     }, false);
                 }
             } else if (type == "shopping_together_accept") {
+                const message = document.createElement("div");
+                message.className = "shopping_together_info";
+                const message_wrap = document.createElement("div");
+                message_wrap.className = "message_wrap";
+                message_wrap.style.width = "230px";
+                message_wrap.style.marginLeft = "0px";
+                message_wrap.style.marginRight = "0px";
+                document.getElementById("messenger_body").appendChild(message_wrap).appendChild(message);
                 if (sender == studentId) {
-                    const message = document.createElement("div");
-                    message.className = "shopping_together_info";
-                    document.getElementById("messenger_body").appendChild(message);
                     message.innerHTML = "Accepted " + friendName + "'s request."
                 } else if (receiver == studentId) {
-                    const message = document.createElement("div");
-                    message.className = "shopping_together_info";
-                    document.getElementById("messenger_body").appendChild(message);
                     message.innerHTML = "My request is accepted.";
                 }
             } else if (type == "shopping_together_reject") {
+                const message = document.createElement("div");
+                message.className = "shopping_together_info";
+                const message_wrap = document.createElement("div");
+                message_wrap.className = "message_wrap";
+                message_wrap.style.width = "230px";
+                message_wrap.style.marginLeft = "0px";
+                message_wrap.style.marginRight = "0px";
+                document.getElementById("messenger_body").appendChild(message_wrap).appendChild(message);
                 if (sender == studentId) {
-                    const message = document.createElement("div");
-                    message.className = "shopping_together_info";
-                    document.getElementById("messenger_body").appendChild(message);
                     message.innerHTML = "Rejected " + friendName + "'s request."
                 } else if (receiver == studentId) {
-                    const message = document.createElement("div");
-                    message.className = "shopping_together_info";
-                    document.getElementById("messenger_body").appendChild(message);
                     message.innerHTML = "My request is rejected.";
                 }
             } else if (type == "shopping_together_start") {
                 const message = document.createElement("div");
                 message.className = "shopping_together_info";
-                document.getElementById("messenger_body").appendChild(message);
+                const message_wrap = document.createElement("div");
+                message_wrap.className = "message_wrap";
+                message_wrap.style.width = "230px";
+                message_wrap.style.marginLeft = "0px";
+                message_wrap.style.marginRight = "0px";
+                document.getElementById("messenger_body").appendChild(message_wrap).appendChild(message);
                 message.innerHTML = "Shopping together!"
             } else if (type == "shopping_together_end") {
                 const message = document.createElement("div");
                 message.className = "shopping_together_info";
-                document.getElementById("messenger_body").appendChild(message);
+                const message_wrap = document.createElement("div");
+                message_wrap.className = "message_wrap";
+                message_wrap.style.width = "230px";
+                message_wrap.style.marginLeft = "0px";
+                message_wrap.style.marginRight = "0px";
+                document.getElementById("messenger_body").appendChild(message_wrap).appendChild(message);
                 message.innerHTML = "Finished shopping with " + friendName;
             } else if (type == "shopping_together_cancel") {
+                const message = document.createElement("div");
+                message.className = "shopping_together_info";
+                const message_wrap = document.createElement("div");
+                message_wrap.className = "message_wrap";
+                message_wrap.style.width = "230px";
+                message_wrap.style.marginLeft = "0px";
+                message_wrap.style.marginRight = "0px";
+                document.getElementById("messenger_body").appendChild(message_wrap).appendChild(message);
                 if (sender == studentId) {
-                    const message = document.createElement("div");
-                    message.className = "shopping_together_info";
-                    document.getElementById("messenger_body").appendChild(message);
                     message.innerHTML = "Canceled my request.";
                 } else if (receiver == studentId) {
-                    const message = document.createElement("div");
-                    message.className = "shopping_together_info";
-                    document.getElementById("messenger_body").appendChild(message);
                     message.innerHTML = "This request is canceled.";
                 }
             } else if (type == "comment") {
@@ -117,42 +142,57 @@ window.onload = function() {
                     sender = elementDD.child('sender').val();
                     receiver = elementDD.child('receiver').val();
                     string = elementDD.child('string').val();
+                    time = elementDD.child('time').val();
                 })
+                const top = element.child('top').val();
+                const left = element.child('left').val();
+                const message = document.createElement("div");
+                message.className = type;
+                const message_wrap = document.createElement("div");
+                message_wrap.className = "message_wrap";
+                message_wrap.style.width = "230px";
+                message_wrap.style.marginLeft = "0px";
+                message_wrap.style.marginRight = "0px";
+                document.getElementById("messenger_body").appendChild(message_wrap).appendChild(message); 
+                message.addEventListener('click', function(){
+                    // window.location.href = 'pinComment.html?studentId=' + studentId + "&groupId=" + groupId;
+                    window.scrollTo(0, top - window.innerHeight * 0.2);
+                }, false);
                 if (sender == studentId) {
-                    const top = element.child('top').val();
-                    const left = element.child('left').val();
-                    const message = document.createElement("div");
-                    message.className = type;
-                    document.getElementById("messenger_body").appendChild(message);
-                    message.style.marginLeft = "20px";
-                    message.innerText = string;
-                    message.addEventListener('click', function(){
-                        // window.location.href = 'pinComment.html?studentId=' + studentId + "&groupId=" + groupId;
-                        window.scrollTo(0, top - window.innerHeight * 0.2);
-                    }, false);
-                } else if (sender == friendId) {
-                    const message = document.createElement("div");
-                    message.className = type;
-                    document.getElementById("messenger_body").appendChild(message);
-                    message.style.marginRight = "20px";
-                    message.innerText = string;
-                    message.addEventListener('click', function(){
-                        // window.location.href = 'pinComment.html?studentId=' + studentId + "&groupId=" + groupId;
-                        window.scrollTo(0, top - window.innerHeight * 0.2);
-                    }, false);
+                    message.innerHTML = "<div class = 'pinComment_thread_header'>" +
+                        "<img class = 'pinComment_author_profile' src = 'src/profile.png'>" +
+                        "<div class = 'pinComment_author_info'>" + "<div class = 'pinComment_author_name'>"
+                        + myName + "</div> <div class = 'pinComment_time'>" + time + "</div></div></div>" +
+                        "<div class = 'pinComment_input'><div class = 'pinComment_text_readOnly'>" + string + 
+                        "</div></div>";
+                    } else if (receiver == studentId) {
+                    message.innerHTML = "<div class = 'pinComment_thread_header'>" +
+                        "<img class = 'pinComment_author_profile' src = 'src/profile.png'>" +
+                        "<div class = 'pinComment_author_info'>" + "<div class = 'pinComment_author_name'>"
+                        + friendName + "</div> <div class = 'pinComment_time'>" + time + "</div></div></div>" +
+                        "<div class = 'pinComment_input'><div class = 'pinComment_text_readOnly'>" + string + 
+                        "</div></div>";
+
                 }
             } else if (type == "chat") {
+                const message = document.createElement("div");
+                message.className = type;
+                const message_wrap = document.createElement("div");
+                message_wrap.className = "message_wrap";
+                document.getElementById("messenger_body").appendChild(message_wrap).appendChild(message);
                 if (sender == studentId) {
-                    const message = document.createElement("div");
-                    message.className = type;
-                    document.getElementById("messenger_body").appendChild(message);
-                    message.style.marginLeft = "20px";
+                    message_wrap.style.marginLeft = "20px";
+                    message.style.borderRadius = "18px 4px 18px 18px";
+                    message.style.float = "right";
+                    message.style.color = "white";
+                    message.style.background = "#424242";
+                    message.style.border = "#424242";
+                    message.style.fontWeight = "400";
                     message.innerText = string;
                 } else if (sender == friendId) {
-                    const message = document.createElement("div");
-                    message.className = type;
-                    document.getElementById("messenger_body").appendChild(message);
-                    message.style.marginRight = "20px";
+                    message_wrap.style.marginRight = "20px";
+                    message.style.borderRadius = "4px 18px 18px 18px";
+                    message.style.float = "left";
                     message.innerText = string;
                 }
             }
