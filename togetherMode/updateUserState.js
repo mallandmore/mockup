@@ -54,15 +54,25 @@ function stopFollowing(){
     if (followingFriend == null) return;
 
     followingFriend = null;
-    document.getElementById('followingButton').innerHTML = "go to the loaction";
+    followingButton.style.visibility = 'visible';
+
+    followingButton.innerHTML = "Go to " + friendName;
+
+    document.getElementById('status').style.visibility = 'hidden';
+    document.getElementById('statusRemark').style.visibility = 'hidden';
     document.getElementById('body_frame').style.visibility = "hidden";
     updateUserDataToDB();
 }
 function startFollowing(fid){
     followingFriend = fid;
-    document.getElementById('followingButton').innerHTML = "with ";
 
-    document.getElementById('body_frame').style.borderColor = "blue";
+    followingButton.style.visibility = 'hidden';
+
+    document.getElementById('status').innerHTML = 'Go around with ' + friendName + ' now';
+    document.getElementById('status').style.background = '#4580ff';
+    document.getElementById('status').style.visibility = 'visible';
+    document.getElementById('statusRemark').style.visibility = 'visible';
+    document.getElementById('body_frame').style.borderColor = "#4580ff";
     document.getElementById('body_frame').style.visibility = "visible";
     updateUserDataToDB();
 }
