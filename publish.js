@@ -6,6 +6,8 @@ var myName;
 var friendId;
 var friendName;
 
+var changing_key;
+
 window.onload = function() {
 
     studentId = getParameterByName('studentId');
@@ -34,15 +36,15 @@ window.onload = function() {
 
     db.child('messenger').on('value', function(snapshot){
         snapshot.forEach(element => {
-            const wow = element.key;
+            const key = element.key;
             const id = element.child("author").val();
             const string = element.child("string").val();
             const type = element.child("type").val();
-            const message = document.createElement("div");
-            message.className = type;
-            document.getElementById("messenger_body").appendChild(message);
             if (type == "shopping_together_request") {
                 if (id == friendId) {
+                    const message = document.createElement("div");
+                    message.className = type;
+                    document.getElementById("messenger_body").appendChild(message);
                     message.innerHTML = "<div class = 'shopping_together_request_label'>" +
                     "Do you want to accept " + friendName + "'s request?" + "</div>" + 
                     "<div class = 'shopping_together_request_buttons'>" +
@@ -50,21 +52,29 @@ window.onload = function() {
                     "</div>" + "<div class = 'shopping_together_request_button' id = 'shopping_together_request_no'>" +
                     "no" + "</div>" + "</div>"
                     document.getElementById('shopping_together_request_yes').addEventListener('click', function(){
-                        db.child('friends').child(friendId).child('togetherModeState').set('on');
-                        db.child('friends').child(studentId).child('togetherModeState').set('on');
-                        message.className = "shopping_together_info";
-                        message.innerHTML = "Accepted " + friendName + "'s request.";
+                        db.child('friends').child(studentId).child('togetherModeState').set('accept:' + key);
                     }, false);
                     document.getElementById('shopping_together_request_no').addEventListener('click', function(){
-                        db.child('friends').child(friendId).child('togetherModeState').set('off');
-                        message.className = "shopping_together_info";
-                        message.innerHTML = "Rejected " + friendName + "'s request.";
+                        db.child('friends').child(studentId).child('togetherModeState').set('reject:' + key);
                     }, false);
+                }
+            } else if (type == "shopping_together_info") {
+                if (id == studentId || id == "all") {
+                    const message = document.createElement("div");
+                    message.className = type;
+                    document.getElementById("messenger_body").appendChild(message);
+                    message.innerHTML = string;
                 }
             } else {
                 if (id == friendId) {
+                    const message = document.createElement("div");
+                    message.className = type;
+                    document.getElementById("messenger_body").appendChild(message);
                     message.innerText = friendName + ": " + string;
                 } else if (id == studentId) {
+                    const message = document.createElement("div");
+                    message.className = type;
+                    document.getElementById("messenger_body").appendChild(message);
                     message.innerText = "Me: " + string;
                 }
             }
