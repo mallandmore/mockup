@@ -859,3 +859,8 @@ html {
   font-weight: 400;
   border: 1px solid black;
 }
+
+#itemLink {
+  background: none;
+  border: none;
+}
