@@ -31,18 +31,18 @@
                 });
                 function loadPage(){
                     if(name == 'Owen' && !followingFlag){
-                        document.getElementById('hardcodedImage').src="src/Owenbag.png";
+                        document.getElementById('hardcodedImage').setAttribute("src", "src/Owenbag.png");
                         console.log("src/"+friendName+"bag.png");
                     } else if(name == 'Sally' && !followingFlag){
-                        document.getElementById('hardcodedImage').src="src/Sallybag.png";
+                        document.getElementById('hardcodedImage').setAttribute("src", "src/Sallybag.png");
                         console.log("src/"+myName+"bag.png");
                     } else if(name == 'Owen' && followingFlag){
                         
-                        document.getElementById('hardcodedImage').src="src/Sallybag.png";
+                        document.getElementById('hardcodedImage').setAttribute("src", "src/Sallybag.png");
                         console.log("src/"+myName+"bag.png");
                     } else if(name == 'Sally' && followingFlag){
 
-                        document.getElementById('hardcodedImage').src="src/Owenbag.png";
+                        document.getElementById('hardcodedImage').setAttribute("src", "src/Owenbag.png");
                         console.log("src/"+myName+"bag.png");
                     }  
                 }
