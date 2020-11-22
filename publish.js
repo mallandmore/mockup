@@ -21,7 +21,12 @@ window.onload = function() {
             } else {
                 friendName = element.child("name").val();
                 friendId = id;
-                traceFriendData();
+
+                traceTogetherModeState(friendId);
+                // prepare shop together interface
+                document.getElementById('startTogetherButton').innerHTML = "Shopping together with " + friendName;
+                document.getElementById('startTogetherButton').style.visibility = "visible";
+
             }
         });
         document.getElementById('messenger_header').innerText = friendName;

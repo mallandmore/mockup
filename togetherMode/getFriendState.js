@@ -5,35 +5,127 @@ var friendScrollY = 0;
 var friendScrollX = 0;
 var friendWindowH = 0;
 var friendWindowW = 0;
-var friendIsFollowing;
+var friendIsFollowing = null;
+var friendTogetherModeState;
 
 var myContentsWidth = 1200; // min 1200 (default width)
 
-function traceFriendData(){
-    // alert(friendId);
+var shoppingTogetherWith;
 
+// shopping together mode
+window.addEventListener('load', function() {
+    var startTogetherBtn = document.getElementById('startTogetherButton');
+    if (startTogetherBtn.addEventListener) {
+        startTogetherBtn.addEventListener("click", requsetToTogetherMode, false);
+    }
+    else if (startTogetherBtn.attachEvent) {
+        startTogetherBtn.attachEvent('onclick', requsetToTogetherMode);
+    }
+});
+
+function requsetToTogetherMode(){
+    if (friendTogetherModeState == 'on') {
+        alert('nope!');
+        return;
+    } else if (friendTogetherModeState == 'waiting') { // friend already request to me
+        // auto start
+    }
+    startTogetherButton.style.background = 'gray';
+    startTogetherButton.style.color = 'white';
+    startTogetherButton.innerHTML = 'Sent a request to '+ friendName;
+    startTogetherButton.style.pointerEvents = 'none';
+
+    firebase.database().ref('1/messenger/').push({
+        author : studentId,
+        type : "shopping_together_request"
+    });
+}
+
+function toggleTogetherMode(){
+    if (shoppingTogetherWith == null) {
+        startTogetherMode();
+    } else {
+        quitTogetherMode();
+    }
+}
+function startTogetherMode() {
+    shoppingTogetherWith = friendId;
+    updateUserDataToDB();
+    traceFriendData(friendId);
+    // show cursor
+    friendCursor.style.visibility = 'visible';
+    // change button text
+    startTogetherButton.style.background = 'white';
+    startTogetherButton.style.color = '#444444';
+    startTogetherButton.innerHTML = "Quit together mode";
+    startTogetherButton.style.pointerEvents = 'auto';
+    // show go to function
+    followingButton.innerHTML = "Go to " + friendName;
+    followingButton.style.visibility = 'visible';
+}
+function quitTogetherMode() {
+    // quit following mode
+    stopFollowing();
+    body_frame.style.visibility = 'hidden';
+
+    shoppingTogetherWith = null;
+    updateUserDataToDB();
+    stopTraceFriendData(friendId);
+    // hide cursor
+    friendCursor.style.visibility = 'hidden';
+    // change button text
+    startTogetherButton.innerHTML = "Shopping together with " + friendName;
+    // hide go to function
+    followingButton.style.visibility = 'hidden';
+}
+
+function traceTogetherModeState(fid) { // always on
+    firebase.database().ref('/'+ groupId +'/' + fid + '/togetherModeState/').on('value', function(state){
+        friendTogetherModeState = state.val();
+        if( friendTogetherModeState == 'off' ) {
+            quitTogetherMode();
+        } else if ( stfriendTogetherModeStateate == 'waiting' ) {
+
+        } else if ( friendTogetherModeState == 'on' ) {
+            // if shoppingTogetherWith == null
+            startTogetherMode();
+        }
+    });
+
+    // firebase.database().ref('/CursorPosition/'+ fid +'/shopTogether/').on('value', function(member){
+    //     partyMember = member.val();
+    //     if (partyMember == studentId && shoppingTogetherWith == null) {
+    //         startTogetherMode();
+    //     } else if (partyMember == null) {
+    //         quitTogetherMode();
+    //     }
+    // });
+}
+
+
+function traceFriendData(fid){
     // get realtime data from firebase
-    firebase.database().ref('/CursorPosition/'+ friendId +'/pX/').on('value', function(posX){
+    firebase.database().ref('/CursorPosition/'+ fid +'/pX/').on('value', function(posX){
         friendPositionX = posX.val() - friendWindowW / 2 + myContentsWidth / 2;
         renderFriendCursor();
     });
-    firebase.database().ref('/CursorPosition/'+ friendId +'/pY/').on('value', function(posY){
+    firebase.database().ref('/CursorPosition/'+ fid +'/pY/').on('value', function(posY){
         friendPositionY = posY.val();
         renderFriendCursor();
     });
-    firebase.database().ref('/CursorPosition/'+ friendId +'/sX/').on('value', function(scrX){
+    firebase.database().ref('/CursorPosition/'+ fid +'/sX/').on('value', function(scrX){
         friendScrollX = scrX.val();
         renderFriendCursor();
     });
-    firebase.database().ref('/CursorPosition/'+ friendId +'/sY/').on('value', function(scrY){
+    firebase.database().ref('/CursorPosition/'+ fid +'/sY/').on('value', function(scrY){
         friendScrollY = scrY.val();
         renderFriendCursor();
     });
-    firebase.database().ref('/CursorPosition/'+ friendId +'/WindowH/').on('value', function(height){
+    firebase.database().ref('/CursorPosition/'+ fid +'/WindowH/').on('value', function(height){
         friendWindowH = height.val();
         renderFriendCursor();
     });
-    firebase.database().ref('/CursorPosition/'+ friendId +'/WindowW/').on('value', function(width){
+    firebase.database().ref('/CursorPosition/'+ fid +'/WindowW/').on('value', function(width){
         friendWindowW = width.val();
         renderFriendCursor();
     });
@@ -48,39 +140,31 @@ function traceFriendData(){
     followingFrame.style.height = document.body.clientHeight - 70;
 
     // trace friend's following state
-    firebase.database().ref('/CursorPosition/'+ friendId +'/following/').on('value', function(state){
+    firebase.database().ref('/CursorPosition/'+ fid +'/following/').on('value', function(state){
         friendIsFollowing = state.val();
 
         if(friendIsFollowing == studentId){
             followingFrame.style.visibility = "visible";
             followingFrame.style.borderColor = "green";
+            updateUserDataToDB();
         } else {
             followingFrame.style.visibility = "hidden";
         }
     });
-    
-    // scripts for follwing button
+
+    // scripts for following button
     var btn = document.getElementById('followingButton');
     if (btn.addEventListener) {
-        btn.addEventListener("click", event => getPermissionForFollowing(friendId), false);
+        btn.addEventListener("click", event => goToFriendLocation(fid), false);
     }
     else if (btn.attachEvent) {
-        btn.attachEvent('onclick', event => getPermissionForFollowing(friendId));
+        btn.attachEvent('onclick', event => goToFriendLocation(fid));
     }
 
-    function getPermissionForFollowing(friendId) {
-        // THINGS TO DO 
-        // 0. check the friend's state -> if follwing other, Deny it.
-        // 1. show the current state (waiting for permission, accept, expried)
-        // 2. if friend allows the requset, start the following mode
-        if ( friendIsFollowing ) {
-            alert('Nope');
+    function goToFriendLocation(fid) {
+        if ( friendIsFollowing != null ) {
         } else {
-            btn.innerHTML = "Requesting to accompany";
-
-            followingFrame.style.visibility = "visible";
-            followingFrame.style.borderColor = "blue";
-            startFollwing(friendId);
+            startFollowing(fid);
         }
     }
     
@@ -88,6 +172,17 @@ function traceFriendData(){
         followingFrame.style.width = Math.max(window.innerWidth, 1223)-23;
         followingFrame.style.height = window.innerHeight;
     });
+}
+
+function stopTraceFriendData(fid) {
+    firebase.database().ref('/CursorPosition/'+ fid +'/pX/').off('value');
+    firebase.database().ref('/CursorPosition/'+ fid +'/pY/').off('value');
+    firebase.database().ref('/CursorPosition/'+ fid +'/sX/').off('value');
+    firebase.database().ref('/CursorPosition/'+ fid +'/sY/').off('value');
+    firebase.database().ref('/CursorPosition/'+ fid +'/WindowH/').off('value');
+    firebase.database().ref('/CursorPosition/'+ fid +'/WindowW/').off('value');
+    firebase.database().ref('/CursorPosition/'+ studentId +'/WindowW/').off('value');
+    firebase.database().ref('/CursorPosition/'+ fid +'/following/').off('value');  
 }
 
 function renderFriendCursor() {
@@ -117,6 +212,10 @@ function renderFriendCursor() {
 }
 
 
+        // THINGS TO DO 
+        // 0. check the friend's state -> if following other, Deny it.
+        // 1. show the current state (waiting for permission, accept, expried)
+        // 2. if friend allows the requset, start the following mode.
 
 // 이거 자기 private page 에도 올 수 있게 하는거랑
 // 각자의 옵션 선택?이 팔로잉 모드에서 같이 나오는걸 보여주면 좋긴할듯..

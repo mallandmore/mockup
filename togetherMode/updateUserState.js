@@ -27,14 +27,14 @@ window.addEventListener('load', function() {
 function updateCursorPosition(x) {
     positionLeft = x.clientX;
     positionTop = x.clientY;
-    updateUserPositionToDB();
+    updateUserDataToDB();
 }
 function updateScrollPosition(x) {
     scrollY = window.pageYOffset;
     scrollX = window.pageXOffset;
-    updateUserPositionToDB();
+    updateUserDataToDB();
 }
-function updateUserPositionToDB() {
+function updateUserDataToDB() {
     firebase.database().ref('CursorPosition/' + studentId + '/').set({
         pX : positionLeft,
         pY : positionTop,
@@ -42,38 +42,35 @@ function updateUserPositionToDB() {
         sX : scrollX,
         WindowH : window.innerHeight,
         WindowW : Math.max(window.innerWidth, 1223),
-        following : follwingFriend
+        following : followingFriend,
+        shopTogether : shoppingTogetherWith
     });
 }
 
 
-var follwingFriend = null;
+var followingFriend = null;
 
 // following fucntions 
 function stopFollowing(){
-    if (follwingFriend != null){
-        follwingFriend = null;
-        document.getElementById('body_frame').style.visibility = "hidden";
-    }
+    if (followingFriend == null) return;
+
+    followingFriend = null;
+    document.getElementById('followingButton').innerHTML = "go to the loaction";
+    document.getElementById('body_frame').style.visibility = "hidden";
+    updateUserDataToDB();
 }
-function startFollwing(fid){
-    follwingFriend = fid;
+function startFollowing(fid){
+    followingFriend = fid;
+    document.getElementById('followingButton').innerHTML = "with ";
+
+    document.getElementById('body_frame').style.borderColor = "blue";
     document.getElementById('body_frame').style.visibility = "visible";
+    updateUserDataToDB();
 }
 function isFollowing() {
-    return follwingFriend;
+    return followingFriend;
 }
 
-function turnOnFollowing(fid) {
-    if( follwingFriend ) {
-        alert('stop Follwing');
-        stopFollowing();
-    } else {
-        alert('start Follwing' + fid);
-        startFollwing(fid);
-    }
-    updateUserPositionToDB();
-}
 
 
 function getParameterByName(name) {
