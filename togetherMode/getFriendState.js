@@ -30,6 +30,7 @@ function requsetToTogetherMode(){
     } else if (friendTogetherModeState == 'waiting') { // friend already request to me
         // auto start
     }
+
     startTogetherButton.style.background = 'gray';
     startTogetherButton.style.color = 'white';
     startTogetherButton.innerHTML = 'Sent a request to '+ friendName;
@@ -39,6 +40,10 @@ function requsetToTogetherMode(){
         author : studentId,
         type : "shopping_together_request"
     });
+
+    firebase.database().ref('1/friends/' + studentId + '/togetherModeState/').set(
+        'waiting'
+    );
 }
 
 function toggleTogetherMode(){
@@ -80,11 +85,12 @@ function quitTogetherMode() {
 }
 
 function traceTogetherModeState(fid) { // always on
-    firebase.database().ref('/'+ groupId +'/' + fid + '/togetherModeState/').on('value', function(state){
+    firebase.database().ref('/'+ groupId +'/friends/' + fid + '/togetherModeState/').on('value', function(state){
         friendTogetherModeState = state.val();
+
         if( friendTogetherModeState == 'off' ) {
             quitTogetherMode();
-        } else if ( stfriendTogetherModeStateate == 'waiting' ) {
+        } else if ( friendTogetherModeState == 'waiting' ) {
 
         } else if ( friendTogetherModeState == 'on' ) {
             // if shoppingTogetherWith == null
