@@ -129,6 +129,12 @@ html {
   margin-left: auto;
   margin-right: auto;
 }
+#perfect_pixel2 {
+  position: relative;
+  width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
 
 #navigate_menu {
   position: relative;
@@ -760,9 +766,8 @@ html {
 .pinComment {
   position: absolute;
   width: 282px;
-  top: 306px;
-  left: 1000px;
   border: 1px solid black;
+  background: white;
 }
 .pinComment_thread {
   padding-top: 12px;
