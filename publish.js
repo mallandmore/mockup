@@ -22,7 +22,7 @@ window.onload = function() {
                 friendName = element.child("name").val();
                 friendId = id;
 
-                traceTogetherModeState(friendId);
+                traceTogetherModeState();
                 // prepare shop together interface
                 document.getElementById('startTogetherButton').innerHTML = "Shopping together with " + friendName;
                 document.getElementById('startTogetherButton').style.visibility = "visible";

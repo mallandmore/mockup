@@ -6,46 +6,57 @@ var friendScrollX = 0;
 var friendWindowH = 0;
 var friendWindowW = 0;
 var friendIsFollowing = null;
-var friendTogetherModeState;
+var togetherModeState;
 
 var myContentsWidth = 1200; // min 1200 (default width)
 
 var shoppingTogetherWith;
 
+
 // shopping together mode
 window.addEventListener('load', function() {
     var startTogetherBtn = document.getElementById('startTogetherButton');
     if (startTogetherBtn.addEventListener) {
-        startTogetherBtn.addEventListener("click", requsetToTogetherMode, false);
+        startTogetherBtn.addEventListener("click", processTogetherMode, false);
     }
     else if (startTogetherBtn.attachEvent) {
-        startTogetherBtn.attachEvent('onclick', requsetToTogetherMode);
+        startTogetherBtn.attachEvent('onclick', processTogetherMode);
     }
 });
 
-function requsetToTogetherMode(){
-    if (friendTogetherModeState == 'on') {
-        alert('nope!');
-        return;
-    } else if (friendTogetherModeState == 'waiting') { // friend already request to me
+function processTogetherMode(){
+    const myTogetherModeDB = firebase.database().ref('/'+ groupId + '/friends/' + studentId + '/togetherModeState/');
+    const friendTogetherModeDB = firebase.database().ref('/'+ groupId + '/friends/' + friendId + '/togetherModeState/');
+    
+    // quit together mode
+    if (togetherModeState == 'on') {
+        myTogetherModeDB.set('off');
+        friendTogetherModeDB.set('off');
+    } 
+    
+    // user should cancle .... 
+    else if (togetherModeState == 'waiting') { // friend already request to me
         // auto start
+    } 
+    
+    // send requset for together mode 
+    else if (togetherModeState == 'off') {
+        startTogetherButton.style.background = 'gray';
+        startTogetherButton.style.color = 'white';
+        startTogetherButton.innerHTML = 'Sent a request to '+ friendName;
+        // 수락, 거절시 까지 버튼 비활성화
+        startTogetherButton.style.pointerEvents = 'none';
+        myTogetherModeDB.set('waiting');
+
+        // send a request
+        firebase.database().ref('1/messenger/').push({
+            author : studentId,
+            type : "shopping_together_request"
+        })
     }
-
-    startTogetherButton.style.background = 'gray';
-    startTogetherButton.style.color = 'white';
-    startTogetherButton.innerHTML = 'Sent a request to '+ friendName;
-    startTogetherButton.style.pointerEvents = 'none';
-
-    firebase.database().ref('1/messenger/').push({
-        author : studentId,
-        type : "shopping_together_request"
-    });
-
-    firebase.database().ref('1/friends/' + studentId + '/togetherModeState/').set(
-        'waiting'
-    );
 }
 
+// 필요없는듯? 
 function toggleTogetherMode(){
     if (shoppingTogetherWith == null) {
         startTogetherMode();
@@ -53,6 +64,7 @@ function toggleTogetherMode(){
         quitTogetherMode();
     }
 }
+
 function startTogetherMode() {
     shoppingTogetherWith = friendId;
     updateUserDataToDB();
@@ -63,7 +75,7 @@ function startTogetherMode() {
     startTogetherButton.style.background = 'white';
     startTogetherButton.style.color = '#444444';
     startTogetherButton.innerHTML = "Quit together mode";
-    startTogetherButton.style.pointerEvents = 'auto';
+    startTogetherButton.style.pointerEvents = 'inherit';
     // show go to function
     followingButton.innerHTML = "Go to " + friendName;
     followingButton.style.visibility = 'visible';
@@ -84,29 +96,42 @@ function quitTogetherMode() {
     followingButton.style.visibility = 'hidden';
 }
 
-function traceTogetherModeState(fid) { // always on
-    firebase.database().ref('/'+ groupId +'/friends/' + fid + '/togetherModeState/').on('value', function(state){
-        friendTogetherModeState = state.val();
+function traceTogetherModeState() { // always on
+    const myTogetherModeDB = firebase.database().ref('/'+ groupId + '/friends/' + studentId + '/togetherModeState/');
+    const friendTogetherModeDB = firebase.database().ref('/'+ groupId + '/friends/' + friendId + '/togetherModeState/');
+    const messengerDB = firebase.database().ref('/' + groupId).child('messenger');
 
-        if( friendTogetherModeState == 'off' ) {
+    myTogetherModeDB.on('value', function(state){
+        togetherModeState = state.val();
+
+        if( togetherModeState == 'off' ) {
             quitTogetherMode();
-        } else if ( friendTogetherModeState == 'waiting' ) {
+        } else if ( togetherModeState == 'waiting' ) {
 
-        } else if ( friendTogetherModeState == 'on' ) {
-            // if shoppingTogetherWith == null
+        } else if ( togetherModeState.split(':')[0] == 'accept' ) { 
+            var changing_key = togetherModeState.split(':')[1];
+            messengerDB.child(changing_key).set({
+                author: studentId,
+                type: "shopping_together_info", 
+                string: "Accepted " + friendName + "'s request." 
+            });
+            myTogetherModeDB.set('on');
+            friendTogetherModeDB.set('on');
+        } else if ( togetherModeState.split(':')[0] == 'reject' ) { 
+            var changing_key = togetherModeState.split(':')[1];
+            messengerDB.child('messenger').child(changing_key).set({ 
+                author: studentId,
+                type: "shopping_together_info", 
+                string: "Rejected " + friendName + "'s request." 
+            });
+            myTogetherModeDB.set('off');
+            friendTogetherModeDB.set('off');
+        } else if ( togetherModeState == 'on' ) {
             startTogetherMode();
         }
     });
-
-    // firebase.database().ref('/CursorPosition/'+ fid +'/shopTogether/').on('value', function(member){
-    //     partyMember = member.val();
-    //     if (partyMember == studentId && shoppingTogetherWith == null) {
-    //         startTogetherMode();
-    //     } else if (partyMember == null) {
-    //         quitTogetherMode();
-    //     }
-    // });
 }
+
 
 
 function traceFriendData(fid){
