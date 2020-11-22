@@ -116,7 +116,7 @@ function getParameterByName(name) {
 
 
 function goToLink(linkid) {
-    if(isFollowing){
+    if(isFollowing()){
         stopFollowing();
     }
     var newPage = defaultLink + 'detailPage.html';

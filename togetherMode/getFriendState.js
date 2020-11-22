@@ -232,7 +232,6 @@ function traceFriendData(fid){
 
         if(friendIsFollowing == studentId){
             // friend start following me
-            document.getElementById('startTogetherButton').style.visibility = 'visible';
             document.getElementById('status').innerHTML = friendName + ' is following you now';
             document.getElementById('status').style.background = '#11D275';
             document.getElementById('status').style.visibility = 'visible';
@@ -241,13 +240,14 @@ function traceFriendData(fid){
             followingFrame.style.visibility = "visible";
             followingFrame.style.borderColor = "#11D275";    
 
-            followingButton.style.pointerEvents = "inherit"
-            followingButton.innerHTML = "Switch leader with " + friendName;
+            document.getElementById('followingButton').style.pointerEvents = "inherit"
+            document.getElementById('followingButton').innerHTML = "Switch leader with " + friendName;
+            document.getElementById('followingButton').style.visibility = 'visible';
             updateUserDataToDB();
         } else if (!isFollowing()) {
             // friend stops following me
-            followingButton.innerHTML = "Go to " + friendName;
-            followingButton.style.visibility = 'visible';
+            document.getElementById('followingButton').innerHTML = "Go to " + friendName;
+            document.getElementById('followingButton').style.visibility = 'visible';
             document.getElementById('status').style.visibility = 'hidden';
             followingFrame.style.visibility = "hidden";
         }
