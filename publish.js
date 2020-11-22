@@ -12,9 +12,17 @@ window.onload = function() {
 
     studentId = getParameterByName('studentId');
     groupId = getParameterByName('groupId');
+    const db = firebase.database().ref('/' + groupId);
+
+    db.child('friends').child(studentId).child('goToLink').once('value').then(function(snapshot){
+        if (snapshot.val() != 0) {
+            var top = snapshot.val();
+            window.scrollTo(0, top - window.innerHeight * 0.2);
+            db.child('friends').child(studentId).child('goToLink').set(0);
+        }
+    })
     
 
-    const db = firebase.database().ref('/' + groupId);
     db.child('friends').once('value').then(function(snapshot){
         snapshot.forEach(element => {
             const id = element.key;
@@ -177,10 +185,9 @@ window.onload = function() {
                     var url_id = url[url.length-1];
                     console.log(url_id);
                     if (url_key != url_id ) {
-                        goToLink(url_key);
+                        db.child('friends').child(studentId).child('goToLink').set(top).then(goToLink(url_key));
                     }
                     // window.location.href = 'pinComment.html?studentId=' + studentId + "&groupId=" + groupId;
-                    window.scrollTo(0, top - window.innerHeight * 0.2);
                 }, false);
             } else if (type == "chat") {
                 const message = document.createElement("div");

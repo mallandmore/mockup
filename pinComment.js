@@ -1,15 +1,3 @@
-var firebaseConfig = {
-    apiKey: "AIzaSyCg6CX4vETntZ2VrDzsDioc6_Vuk3GZHC0",
-    authDomain: "mallandmore.firebaseapp.com",
-    databaseURL: "https://mallandmore.firebaseio.com",
-    projectId: "mallandmore",
-    storageBucket: "mallandmore.appspot.com",
-    messagingSenderId: "304964816878",
-    appId: "1:304964816878:web:cc31032799331e167088ff",
-    measurementId: "G-77TJCD88E7"
-};
-
-firebase.initializeApp(firebaseConfig);
 
 var groupId = getParameterByName('groupId');
 var studentId = getParameterByName('studentId');
@@ -43,71 +31,72 @@ firebase.database().ref(groupId+'/messenger/').on('value', function(snapshot) {
     snapshot.forEach(function(childSnapshot) {
         //For each comment
         if (childSnapshot.child("type").val() == "comment"){
-            var comment = document.createElement("div");
-            oldComments.push(comment);
-            comment.className = "pinComment";
-            comment.style.position = "absolute";
-            comment.style.left = childSnapshot.child("left").val()-600+window.innerWidth/2+'px';
-            comment.style.top = childSnapshot.child("top").val()+'px';
-            comment.setAttribute("commentKey", childSnapshot.key);
-            document.body.appendChild(comment);
+            var url = location.href.split("?")[0].split("/");
+            var url_id = url[url.length-1];
+            if (childSnapshot.child("url").val() == url_id) {
+                var comment = document.createElement("div");
+                oldComments.push(comment);
+                comment.className = "pinComment";
+                comment.style.position = "absolute";
+                comment.style.left = childSnapshot.child("left").val()-600+window.innerWidth/2+'px';
+                comment.style.top = childSnapshot.child("top").val()+'px';
+                comment.setAttribute("commentKey", childSnapshot.key);
+                document.body.appendChild(comment);
 
-            //For each comment thread
-            childSnapshot.child('thread').forEach(function(childSnapshot) {
-                comment.setAttribute("threadKey", childSnapshot.key);
-                var old_thread = create_old_thread();
-                comment.appendChild(old_thread);
-                var sender = childSnapshot.child("sender").val();
-                var sender_name;
-                firebase.database().ref(groupId+'/friends/'+sender).child("name").once('value').then(function(snapshot){
-                    sender_name = snapshot.val();
-                }).then(function() {
-                    old_thread.getElementsByClassName("pinComment_author_name")[0].innerHTML = sender_name;
-                    old_thread.getElementsByClassName("pinComment_time")[0].innerHTML = childSnapshot.child("time").val();
-                    old_thread.getElementsByClassName("pinComment_author_profile")[0].src = "src/"+sender_name+"_profile.png";
-                    old_thread.getElementsByClassName("pinComment_text_readOnly")[0].readOnly = true;
-                    old_thread.getElementsByClassName("pinComment_text_readOnly")[0].innerHTML = childSnapshot.child("string").val();
-                    var old_thread_edit = old_thread.getElementsByClassName("pinComment_edit")[0];
-                    var old_thread_delete = old_thread.getElementsByClassName("pinComment_delete")[0];
-                    if (childSnapshot.child("sender").val() == studentId){
-                        
-                        old_thread_edit.onclick = function(){
-                            var old_text_readOnly = old_thread.getElementsByClassName("pinComment_text_readOnly")[0]; 
-
-                            //Switch to input box
-                            var str = '<a href="http://www.com">item to replace</a>'; //it can be anything
-                            var Obj = old_text_readOnly;
-                            var tmpObj=document.createElement("div");
-                            tmpChild = document.createElement("input",{type:"text"});
-                            tmpChild.className = "pinComment_text_readOnly";
-                            tmpChild.value = old_text_readOnly.innerHTML;
-                            tmpObj.appendChild(tmpChild);
-                            ObjParent=Obj.parentNode; 
-                            ObjParent.replaceChild(tmpObj,Obj); //here we placing our temporary data instead of our target
+                //For each comment thread
+                childSnapshot.child('thread').forEach(function(childSnapshot) {
+                    comment.setAttribute("threadKey", childSnapshot.key);
+                    var old_thread = create_old_thread();
+                    comment.appendChild(old_thread);
+                    var sender = childSnapshot.child("sender").val();
+                    var sender_name;
+                    firebase.database().ref(groupId+'/friends/'+sender).child("name").once('value').then(function(snapshot){
+                        sender_name = snapshot.val();
+                    }).then(function() {
+                        old_thread.getElementsByClassName("pinComment_author_name")[0].innerHTML = sender_name;
+                        old_thread.getElementsByClassName("pinComment_time")[0].innerHTML = childSnapshot.child("time").val();
+                        old_thread.getElementsByClassName("pinComment_author_profile")[0].src = "src/"+sender_name+"_profile.png";
+                        old_thread.getElementsByClassName("pinComment_text_readOnly")[0].readOnly = true;
+                        old_thread.getElementsByClassName("pinComment_text_readOnly")[0].innerHTML = childSnapshot.child("string").val();
+                        var old_thread_edit = old_thread.getElementsByClassName("pinComment_edit")[0];
+                        var old_thread_delete = old_thread.getElementsByClassName("pinComment_delete")[0];
+                        if (childSnapshot.child("sender").val() == studentId){
                             
-                            
-                            tmpChild.addEventListener("keyup", function(event) {
-                                if (event.key === "Enter") {
-                                    //When modified the comment
-                                    firebase.database().ref(groupId+'/messenger/'+comment.getAttribute("commentKey")+"/thread/" + comment.getAttribute("threadKey")).child("string").set(tmpChild.value); //child.set로 해야되나?
-                                    comment.remove();
-                                }
-                            });
-                        };
-                        old_thread_delete.onclick = function(){
-                            firebase.database().ref(groupId+'/messenger/').child(comment.getAttribute("commentKey")).remove();
-                            comment.remove();
-                        };
-                    }
-                    else{
-                        old_thread_edit.remove();
-                        old_thread_delete.remove();
-                    }
-                })
+                            old_thread_edit.onclick = function(){
+                                var old_text_readOnly = old_thread.getElementsByClassName("pinComment_text_readOnly")[0]; 
 
-            });
-            // var reply = document.createElement("div");
-            // reply.className = 
+                                //Switch to input box
+                                var str = '<a href="http://www.com">item to replace</a>'; //it can be anything
+                                var Obj = old_text_readOnly;
+                                var tmpObj=document.createElement("div");
+                                tmpChild = document.createElement("input",{type:"text"});
+                                tmpChild.className = "pinComment_text_readOnly";
+                                tmpChild.value = old_text_readOnly.innerHTML;
+                                tmpObj.appendChild(tmpChild);
+                                ObjParent=Obj.parentNode; 
+                                ObjParent.replaceChild(tmpObj,Obj); //here we placing our temporary data instead of our target
+                                
+                                
+                                tmpChild.addEventListener("keyup", function(event) {
+                                    if (event.key === "Enter") {
+                                        //When modified the comment
+                                        firebase.database().ref(groupId+'/messenger/'+comment.getAttribute("commentKey")+"/thread/" + comment.getAttribute("threadKey")).child("string").set(tmpChild.value); //child.set로 해야되나?
+                                        comment.remove();
+                                    }
+                                });
+                            };
+                            old_thread_delete.onclick = function(){
+                                firebase.database().ref(groupId+'/messenger/').child(comment.getAttribute("commentKey")).remove();
+                                comment.remove();
+                            };
+                        }
+                        else{
+                            old_thread_edit.remove();
+                            old_thread_delete.remove();
+                        }
+                    })
+                });
+            } 
         }
     });
 
@@ -171,12 +160,15 @@ function create_comment(positionLeft, positionTop){
 
     function send_comment(){
         if (comment.getAttribute("commentKey") === "none"){
+            var url = location.href.split("?")[0].split("/");
+            var url_id = url[url.length-1];
             //When first entered the comment
             var commentKey = firebase.database().ref(groupId+'/messenger/').push({
                 type: "comment",
                 left: 600 + (positionLeft - window.innerWidth/2),
                 top: positionTop,
-                thread: "none"
+                thread: "none",
+                url: url_id
             }).key;
             var threadKey = firebase.database().ref(groupId+'/messenger/'+commentKey+'/thread/').push({
                 sender: studentId,
