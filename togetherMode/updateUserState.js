@@ -113,7 +113,8 @@ function getParameterByName(name) {
 
 
 function goToLink(linkid) {
-    const defaultLink = 'file:///Users/oooo/Documents/GitHub/mockup/';
+    // const defaultLink = 'file:///Users/oooo/Documents/GitHub/mockup/';
+    const defaultLink = 'https://mallandmore.github.io/mockup/';
 
     var newPage = defaultLink + 'detailPage.html';
     updateUserUrlDB(newPage);
