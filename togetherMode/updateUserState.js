@@ -1,4 +1,5 @@
 // const defaultLink = 'file:///Users/oooo/Documents/GitHub/mockup/';
+// const defaultLink = 'file:///C:/Users/SketchLab/Documents/GitHub/mockup/';
 const defaultLink = 'https://mallandmore.github.io/mockup/';
 
 // variables for user cursor postion
