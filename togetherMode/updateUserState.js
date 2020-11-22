@@ -9,6 +9,7 @@ var followingFriend;
 function checkPreviousFollowingState(){
     firebase.database().ref('/data/' + getParameterByName('studentId') + '/following/').once('value').then(function(snapshot){
         followingFriend = snapshot.val();
+        // console.log(followingFriend);
         checkit(followingFriend);
     });
     function checkit(fid){
@@ -19,7 +20,10 @@ function checkPreviousFollowingState(){
 }
 
 function addUserMovementListener(){
+
+    updateUserUrlDB(location.href.split('?')[0]);
     checkPreviousFollowingState();
+
     // event listener
     if ( document.addEventListener ) {
         document.addEventListener("mousemove", updateCursorPosition, false);
@@ -61,6 +65,9 @@ function updateUserDataToDB() {
 }
 function updateUserFollowingDB(){
     firebase.database().ref('/data/' + studentId + '/following/').set(followingFriend);
+}
+function updateUserUrlDB(link){
+    firebase.database().ref('/data/' + studentId + '/url').set(link);
 }
 
 
@@ -104,3 +111,10 @@ function getParameterByName(name) {
 }
 
 
+function goToLink(linkid) {
+    const defaultLink = 'file:///Users/oooo/Documents/GitHub/mockup/';
+
+    var newPage = defaultLink + 'detailPage.html';
+    updateUserUrlDB(newPage);
+    window.location.href = newPage + '?groupId=' + groupId + '&studentId=' + studentId ;
+}

@@ -1,13 +1,11 @@
 var togetherModeState;
 var currentRequestKey;
-
 var myContentsWidth = 1200; // min 1200 (default width)
 
 
 // shopping together mode
 window.addEventListener('load', function() {
     var startTogetherBtn = document.getElementById('startTogetherButton');
-    var btn = document.getElementById('followingButton');
     if (startTogetherBtn.addEventListener) {
         startTogetherBtn.addEventListener("click", manageTogetherMode, false);
     }
@@ -171,6 +169,7 @@ var friendScrollX = 0;
 var friendWindowH = 0;
 var friendWindowW = 0;
 var friendIsFollowing = null;
+var friendLink = null;
 
 function stopTraceFriendData(fid) {
     firebase.database().ref('/data/' + fid + '/position/pX/').off('value');
@@ -181,6 +180,7 @@ function stopTraceFriendData(fid) {
     firebase.database().ref('/data/' + fid + '/position/WindowW/').off('value');
     firebase.database().ref('/data/' + studentId + '/position/WindowW/').off('value');
     firebase.database().ref('/data/' + fid + '/following/').off('value');
+    firebase.database().ref('/data/' + fid + '/url/').off('value');
 }
 
 function traceFriendData(fid){
@@ -213,6 +213,12 @@ function traceFriendData(fid){
     firebase.database().ref('/data/' + studentId + '/position/WindowW/').on('value', function(width){
         myContentsWidth = width.val();
     });
+    firebase.database().ref('/data/' + fid + '/url/').on('value', function(link){
+        friendLink = link.val();
+        if(!checkWeAreInSameLink() && isFollowing()) {
+           window.location.href = friendLink + '?groupId=' + groupId + '&studentId=' + studentId;
+        }
+    });
 
 
     // prepare frame for following mode
@@ -239,6 +245,8 @@ function traceFriendData(fid){
             updateUserDataToDB();
         } else if (!isFollowing()) {
             // friend stops following me
+            followingButton.innerHTML = "Go to " + friendName;
+            followingButton.style.visibility = 'visible';
             document.getElementById('status').style.visibility = 'hidden';
             followingFrame.style.visibility = "hidden";
         }
@@ -253,6 +261,7 @@ function traceFriendData(fid){
 
     // scripts for following button
     
+    var btn = document.getElementById('followingButton');
     if (btn.addEventListener) {
         btn.addEventListener("click", event => goToFriendLocation(fid), false);
     }
@@ -271,12 +280,26 @@ function goToFriendLocation(fid) {
         // drop follower
         firebase.database().ref('/data/' + fid + '/following/').set(null);
     }
+    console.log(fid);
     startFollowing(fid);
+    if(!checkWeAreInSameLink()) {
+        window.location.href = friendLink + '?groupId=' + groupId + '&studentId=' + studentId;
+    }
+}
+function checkWeAreInSameLink(){
+    return (friendLink == location.href.split('?')[0]);
 }
 
 function renderFriendCursor() {
     // update friend's cursor position
     const friendCursorSize = 62;
+
+    // if same link, visible
+    if(checkWeAreInSameLink()){
+        friendCursor.style.visibility = 'visible';
+    } else {
+        friendCursor.style.visibility = 'hidden';
+    }
 
     // bounding firend cursor
     if (( friendPositionX + friendScrollX ) < 0){
