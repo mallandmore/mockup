@@ -1,3 +1,9 @@
+var studentId = getParameterByName('studentId');
+
+var userData = firebase.database().ref('/onlineUsers/').push({
+    uid : studentId
+}).key;
+
 window.onload = function() {
     var avenueRows = document.getElementsByClassName('avenue_row');
     var avenueColumns = document.getElementsByClassName('avenue_col');
@@ -30,6 +36,8 @@ window.onload = function() {
     var XRandPos = columnPosition[IndexX];
     var YRandPos = rowPosition[IndexY];
     var randDirection = initDirection[RandD];
+
+    overallPos = getOverallPos();
 
     function getOverallPos() {
         if (IndexX == 0) {
@@ -70,8 +78,6 @@ window.onload = function() {
         return pos;
     }
 
-    var overallPos = getOverallPos();
-
     var thumbnailImages = document.getElementsByClassName('thumbnail_image');
     var thumbnailImagesArr = Array.from(thumbnailImages);
 
@@ -95,8 +101,6 @@ window.onload = function() {
         }
     }
 
-    var studentId = getParameterByName('studentId');
-
     window.addEventListener('beforeunload', function(e) {
         deleteChocome();
     });
@@ -112,15 +116,15 @@ window.onload = function() {
     function showHuman() {
         firebase.database().ref('/chocome/').on('value', function(snapshot){
             snapshot.forEach(function(childSnapshot) {
-                const removeQueueEntry = firebase.database().ref('/removeQueue/');
-                removeQueueEntry.on('value', function(removeSnapshot){
-                    removeSnapshot.forEach(function(removeChildSnapshot) {
-                        const removeKey = removeChildSnapshot.val().key;
-                        var removeHuman = document.getElementById(removeKey);
-                        if (removeHuman != null) removeHuman.remove();
-                        removeQueueEntry.child(removeChildSnapshot.key).remove();
-                    });
-                });
+                // const removeQueueEntry = firebase.database().ref('/removeQueue/');
+                // removeQueueEntry.on('value', function(removeSnapshot){
+                //     removeSnapshot.forEach(function(removeChildSnapshot) {
+                //         const removeKey = removeChildSnapshot.val().key;
+                //         var removeHuman = document.getElementById(removeKey);
+                //         if (removeHuman != null) removeHuman.remove();
+                //         removeQueueEntry.child(removeChildSnapshot.key).remove();
+                //     });
+                // });
                 const uid = childSnapshot.val().userId;
                 if (uid != studentId) {
                     const curr = childSnapshot.val().currImg;
@@ -154,6 +158,7 @@ window.onload = function() {
                             otherHuman.className = "human";
                             if (curr == 0) {
                                 var initPos = getPositionFromPath(initPath);
+                                console.log(initPos);
                                 otherHuman.style.left = initPos[0] - 15;
                                 otherHuman.style.top = initPos[1] - 15;
                                 otherHuman.style.transform = facingDir;
@@ -238,7 +243,10 @@ window.onload = function() {
                         console.log(flag);
                         if (flag)  {
                             console.log(flag);
-                            firebase.database().ref('/chocome/'+childSnapshot.key).child('isMoving').set(false);
+                            console.log(myChocomeKey);
+                            console.log(childSnapshot.key);
+                            if (myChocomeKey == childSnapshot.key)
+                                firebase.database().ref('/chocome/'+childSnapshot.key).update({isMoving : false});
                         }
                     });
                 }
@@ -248,10 +256,11 @@ window.onload = function() {
 
     function deleteChocome() {
         var rootRef = firebase.database().ref('/chocome/').child(myChocomeKey);
-        rootRef.remove();
         firebase.database().ref('/removeQueue/').push({
-            key: myChocomeKey
+            key: myChocomeKey,
+            uid: studentId
         });
+        rootRef.remove();
     }
 
     function getParameterByName(name) {
@@ -702,3 +711,7 @@ window.onload = function() {
     }    
     
 }
+
+window.addEventListener('beforeunload', function(e) {
+    firebase.database().ref('/onlineUsers/'+userData).remove();
+})
