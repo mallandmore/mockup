@@ -96,133 +96,177 @@ window.onload = function() {
         }
     }
 
-    var movingHuman = document.createElement("img");
-    movingHuman.src = "src/human.gif";
-    movingHuman.className = "human";
-    movingHuman.style.left = XRandPos - 15;
-    movingHuman.style.top = YRandPos - 15;
-    movingHuman.style.transform = randDirection;
-
-    
-
-    firebase.database().ref('/chocome/').once('value').then(function(snapshot){
-        snapshot.forEach(function(childSnapshot) {
-            const curr = childSnapshot.val().currImg;
-            const prev = childSnapshot.val().prevImg;
-            const initPath = childSnapshot.val().initPath;
-            const facingDir = childSnapshot.val().direction;
-            var otherHuman = document.createElement("img");
-            otherHuman.src = "src/human.gif";
-            otherHuman.className = "human";
-            
-            if (curr == 0) {
-                var initPos = getPositionFromPath(initPath);
-                console.log(initPos);
-                otherHuman.style.left = initPos[0] - 15;
-                otherHuman.style.top = initPos[1] - 15;
-                otherHuman.style.transform = facingDir;
-            } else {
-                otherHuman.style.left = (posOnImg[curr - 1])[0];
-                otherHuman.style.top = (posOnImg[curr - 1])[1];
-                if (curr % 3 == 1 || curr == 5) {
-                    otherHuman.style.transform = 'rotate(90deg)';
-                } else {
-                    otherHuman.style.transform = 'rotate(-90deg)';
-                }
-            }
-            otherHuman.setAttribute('key', childSnapshot.key);
-            otherHuman.id = childSnapshot.key;
-            document.body.appendChild(otherHuman);
-        });
-    }).then(function() {
-        var newChocome = firebase.database().ref('/chocome/').push({
-            prevImg : 0,
-            currImg : 0,
-            initPath : overallPos,
-            isMoving : false,
-            direction : randDirection
-        }).key;
-        movingHuman.setAttribute("key", newChocome);
-        movingHuman.id = newChocome;
-    });
+    var studentId = getParameterByName('studentId');
 
     window.addEventListener('beforeunload', function(e) {
         deleteChocome();
     });
 
-    document.body.appendChild(movingHuman);
+    showHuman();
+    var myChocomeKey = newChocomeAdd();
+    listenToClick();
+    moveHumans();
 
-    
-    for (let thumbnailImg of thumbnailImagesArr) {
-        thumbnailImg.onclick = function() {
-            const imgNum = thumbnailImagesArr.indexOf(thumbnailImg) + 1;
-            var thisChocome = firebase.database().ref('/chocome/'+movingHuman.getAttribute("key"));
-            thisChocome.child('isMoving').once('value').then(function(moveTF){
-                const movingOrNot = moveTF.val();
-                if (!movingOrNot) {
-                    thisChocome.child('isMoving').set(true);
-                    thisChocome.child('currImg').once('value').then(function(currVal){
-                        const curr = currVal.val();
-                        thisChocome.child('prevImg').set(curr);
-                        thisChocome.child('currImg').set(imgNum);
-                        pathAlgo(curr, imgNum, overallPos, movingHuman).then(function(flag) {
-                            thisChocome.child('isMoving').set(flag);
-                        });
-                    });
-                }
-            })
-        };   
-    }    
+    var d = new Date();
+    var insertionTime = d.getTime();
 
-    function otherHumanMove() {
+    function showHuman() {
         firebase.database().ref('/chocome/').on('value', function(snapshot){
             snapshot.forEach(function(childSnapshot) {
-                const curr = childSnapshot.val().currImg;
-                const prev = childSnapshot.val().prevImg;
-                const initPath = childSnapshot.val().initPath;
-                const movingOrNot = childSnapshot.val().isMoving;
-                var eachHuman = document.getElementById(childSnapshot.key);
-                
-                if (childSnapshot.key != movingHuman.getAttribute('key')) {
-                    if (movingOrNot) {
-                        pathAlgo(prev, curr, initPath, eachHuman);
+                const removeQueueEntry = firebase.database().ref('/removeQueue/');
+                removeQueueEntry.on('value', function(removeSnapshot){
+                    removeSnapshot.forEach(function(removeChildSnapshot) {
+                        const removeKey = removeChildSnapshot.val().key;
+                        var removeHuman = document.getElementById(removeKey);
+                        if (removeHuman != null) removeHuman.remove();
+                        removeQueueEntry.child(removeChildSnapshot.key).remove();
+                    });
+                });
+                const uid = childSnapshot.val().userId;
+                if (uid != studentId) {
+                    const curr = childSnapshot.val().currImg;
+                    const prev = childSnapshot.val().prevImg;
+                    const initPath = childSnapshot.val().initPath;
+                    const facingDir = childSnapshot.val().direction;
+                    const movingOrNot = childSnapshot.val().isMoving;
+                    const movingTime = childSnapshot.val().movingStartTime;
+                    if (insertionTime > movingTime && !movingOrNot) {
+                        var otherHuman = document.createElement("img");
+                        otherHuman.src = "src/human.gif";
+                        otherHuman.className = "human";
+                        if (curr == 0) {
+                            var initPos = getPositionFromPath(initPath);
+                            otherHuman.style.left = initPos[0] - 15;
+                            otherHuman.style.top = initPos[1] - 15;
+                            otherHuman.style.transform = facingDir;
+                        } else {
+                            otherHuman.style.left = (posOnImg[curr - 1])[0];
+                            otherHuman.style.top = (posOnImg[curr - 1])[1];
+                            if (curr % 3 == 1 || curr == 5) {
+                                otherHuman.style.transform = 'rotate(90deg)';
+                            } else {
+                                otherHuman.style.transform = 'rotate(-90deg)';
+                            }
+                        }
+                        otherHuman.setAttribute('key', childSnapshot.key);
+                        otherHuman.id = childSnapshot.key;
+                        document.body.appendChild(otherHuman);
                     }
                 }
             });
-        })
+        });
+    }
+    
+    function newChocomeAdd () {
+        var newChocome = firebase.database().ref('/chocome/').push({
+            prevImg : 0,
+            currImg : 0,
+            initPath : overallPos,
+            isMoving : false,
+            direction : randDirection,
+            userId : studentId,
+            movingStartTime : 0
+        }).key;
+        return newChocome;
     }
 
-    otherHumanMove();
+    function listenToClick() {
+        for (let thumbnailImg of thumbnailImagesArr) {
+            thumbnailImg.onclick = function() {
+                const imgNum = thumbnailImagesArr.indexOf(thumbnailImg) + 1;
+                var thisChocome = firebase.database().ref('/chocome/'+myChocomeKey);
+                thisChocome.child('isMoving').once('value').then(function(moveTF){
+                    const movingOrNot = moveTF.val();
+                    if (!movingOrNot) {
+                        thisChocome.child('currImg').once('value').then(function(currVal){
+                            const curr = currVal.val();
+                            var day = new Date();
+                            var time = day.getTime();
+                            thisChocome.update({
+                                prevImg : curr,
+                                currImg : imgNum,
+                                movingStartTime : time,
+                                isMoving : true
+                            });
+                        });
+                    }
+                });
+            };   
+        }
+    }
+
+    function moveHumans() {
+        firebase.database().ref('/chocome/').on('value', function(snapshot){
+            snapshot.forEach(function(childSnapshot) {   
+                const initPath = childSnapshot.val().initPath;
+                const movingTime = childSnapshot.val().movingStartTime;
+                const movingOrNot = childSnapshot.val().isMoving;
+                const uid = childSnapshot.val().userId;
+                var eachHuman = document.getElementById(childSnapshot.key);
+                if (uid != studentId) {
+                    if (movingOrNot) {
+                        console.log(childSnapshot.key);
+                        var curr = childSnapshot.child('currImg').val();
+                        var prev = childSnapshot.child('prevImg').val();
+                        console.log(prev);
+                        console.log(curr);
+                        console.log(initPath);
+                        pathAlgo(prev, curr, initPath, eachHuman).then(function(flag) {
+                            if (flag)  {
+                                console.log(flag);
+                                firebase.database().ref('/chocome/'+childSnapshot.key).child('isMoving').set(false);
+                            }
+                        });
+                    }
+                }
+                
+            });
+        });
+    }
 
     function deleteChocome() {
-        console.log('hell');
-        let rootRef = firebase.database().ref('/chocome/' + movingHuman.getAttribute("key"));
+        var rootRef = firebase.database().ref('/chocome/').child(myChocomeKey);
         rootRef.remove();
+        firebase.database().ref('/removeQueue/').push({
+            key: myChocomeKey
+        });
+    }
+
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
     }
       
-    function move(element, direction, distance, duration=8000) {
+    function move(element, direction, distance, duration) {
         // function originally from https://medium.com/@theredwillows/moving-an-element-with-javascript-part-1-765c6a083d45
-        var topOrLeft = (direction=="left" || direction=="right") ? "left" : "top";
-        var isNegated = (direction=="up" || direction=="left");
-        if (isNegated) { distance *= -1; }
-        var elStyle = window.getComputedStyle(element);
-        var value = elStyle.getPropertyValue(topOrLeft).replace("px", "");
-        var destination = Number(value) + distance;
-        var frameDistance = distance / (duration / 10);
-        function moveAFrame() {
-           elStyle = window.getComputedStyle(element);
-           value = elStyle.getPropertyValue(topOrLeft).replace("px", "");
-           var newLocation = Number(value) + frameDistance;
-           var beyondDestination = ( (!isNegated && newLocation>=destination) || (isNegated && newLocation<=destination) );
-           if (beyondDestination) {
-              element.style[topOrLeft] = destination + "px";
-              clearInterval(movingFrames);
-           }
-           else {
-              element.style[topOrLeft] = newLocation + "px";
-           }
-        }
-        var movingFrames = setInterval(moveAFrame, 10);
+        return new Promise(function (resolve, reject) {
+            var topOrLeft = (direction=="left" || direction=="right") ? "left" : "top";
+            var isNegated = (direction=="up" || direction=="left");
+            if (isNegated) { distance *= -1; }
+            var elStyle = window.getComputedStyle(element);
+            var value = elStyle.getPropertyValue(topOrLeft).replace("px", "");
+            var destination = Number(value) + distance;
+            var frameDistance = distance / (duration / 10);
+            function moveAFrame() {
+               elStyle = window.getComputedStyle(element);
+               value = elStyle.getPropertyValue(topOrLeft).replace("px", "");
+               var newLocation = Number(value) + frameDistance;
+               var beyondDestination = ( (!isNegated && newLocation>=destination) || (isNegated && newLocation<=destination) );
+               if (beyondDestination) {
+                  element.style[topOrLeft] = destination + "px";
+                  clearInterval(movingFrames);
+               }
+               else {
+                  element.style[topOrLeft] = newLocation + "px";
+               }
+            }
+            var movingFrames = setInterval(moveAFrame, 10);
+            setTimeout(function() {
+                resolve(true)
+            }, duration);
+        });
     }
 
     var horizontalBlockDist = Number(columnPosition[1] - columnPosition[0]);
@@ -230,29 +274,29 @@ window.onload = function() {
 
     function moveRightOneBlock(element) {
         element.style.transform = 'rotate(-90deg)'
-        move(element, 'right', horizontalBlockDist);
+        return move(element, 'right', horizontalBlockDist, 6000);
     }
 
     function moveLeftOneBlock(element) {
         element.style.transform = 'rotate(90deg)';
-        move(element, 'left', horizontalBlockDist);
+        return move(element, 'left', horizontalBlockDist, 6000);
     }
 
     function moveUpOneBlock(element) {
         element.style.transform = 'rotate(180deg)';
-        move(element, 'up', verticalBlockDist);
+        return move(element, 'up', verticalBlockDist, 8000);
     }
 
     function moveDownOneBlock(element) {
         element.style.transform = 'rotate(0deg)';
-        move(element, 'down', verticalBlockDist);
+        return move(element, 'down', verticalBlockDist, 8000);
     }
 
     var img0 = thumbnailImagesArr[0];
     var img1 = thumbnailImagesArr[3];
-    var img0Top = img0.getBoundingClientRect().top;
-    var img0Right = img0.getBoundingClientRect().right;
-    var img1Top = img1.getBoundingClientRect().top;
+    var img0Top = img0.getBoundingClientRect().top + window.pageYOffset;
+    var img0Right = img0.getBoundingClientRect().right + window.pageXOffset;
+    var img1Top = img1.getBoundingClientRect().top + window.pageYOffset;
 
     var posX = columnPosition[0];
     var posY = rowPosition[0];
@@ -263,68 +307,81 @@ window.onload = function() {
 
     function moveRightLittle(element) {
         element.style.transform = 'rotate(-90deg)'
-        move(element, 'right', horizontalLittleDist, 3000);
+        return move(element, 'right', horizontalLittleDist, 2000);
     }
 
     function moveLeftLittle(element) {
         element.style.transform = 'rotate(90deg)';
-        move(element, 'left', horizontalLittleDist, 3000);
+        return move(element, 'left', horizontalLittleDist, 2000);
     }
 
     function moveUpLittle(element) {
         element.style.transform = 'rotate(180deg)';
-        move(element, 'up', upLittleDist, 6000);
+        return move(element, 'up', upLittleDist, 6000);
     }
 
     function moveDownLittle(element) {
         element.style.transform = 'rotate(0deg)';
-        move(element, 'down', downLittleDist, 2000);
+        return move(element, 'down', downLittleDist, 2000);
     }
 
     function exitRightLittle(element) {
         element.style.transform = 'rotate(-90deg)'
-        move(element, 'right', horizontalLittleDist, 3000);
+        return move(element, 'right', horizontalLittleDist, 2000);
     }
 
     function exitLeftLittle(element) {
         element.style.transform = 'rotate(90deg)';
-        move(element, 'left', horizontalLittleDist, 3000);
+        return move(element, 'left', horizontalLittleDist, 2000);
     }
 
     function exitUpLittle(element) {
         element.style.transform = 'rotate(180deg)';
-        move(element, 'up', downLittleDist, 2000);
+        return move(element, 'up', downLittleDist, 2000);
     }
 
     function exitDownLittle(element) {
         element.style.transform = 'rotate(0deg)';
-        move(element, 'down', upLittleDist, 6000);
+        return move(element, 'down', upLittleDist, 6000);
     }
 
     function pathAlgo(fromImg, toImg, initPath, element) {
         return new Promise(function(resolve, reject) {
             if (fromImg == toImg) {
-                resolve(false);
+                resolve(true);
             }
             let pathArr = whereToGo(fromImg, toImg, element);
             let path2 = pathArr[0];
-            var delay = 0;
             if (fromImg == 0) {
                 if (initPath != path2) {
-                    delay = PathToPath(initPath, path2, delay, element);
+                    PathToPath(initPath, path2, element).then(function(flag1) {
+                        if (flag1) PathToImg(toImg, element).then(function(flag2) {
+                            if (flag2) resolve(true);
+                        });
+                    });
+                } else {
+                    PathToImg(toImg, element).then(function(flag) {
+                        if (flag) resolve(true);
+                    });
                 }
             } else {
                 let path1 = pathArr[1];
-    
-                delay = ImgToPath(fromImg, delay, element);
-                if (path1 != path2) {
-                    delay = PathToPath(path1, path2, delay, element);
-                }
+                ImgToPath(fromImg, element).then(function(flag1) {
+                    if (flag1) {
+                        if (path1 != path2) {
+                            PathToPath(path1, path2, element).then(function(flag2) {
+                                if (flag2) PathToImg(toImg, element).then(function(flag3) {
+                                    if (flag3) resolve(true);
+                                });
+                            });
+                        } else {
+                            PathToImg(toImg, element).then(function(flag2) {
+                                if (flag2) resolve(true);
+                            });
+                        }
+                    }
+                });
             }
-            delay = PathToImg(toImg, delay, element);
-            setTimeout(function() {
-                resolve(false); 
-            }, delay);
         });
     }
 
@@ -366,192 +423,178 @@ window.onload = function() {
         return pathArr;
     }
 
-    function ImgToPath(imgNum, delay, element) {
-        delay += 1000;
-        if (imgNum == 1 || imgNum == 2 || imgNum == 4 || imgNum == 7 || imgNum == 8) {
-            setTimeout(exitRightLittle, delay, element);
-            delay+=4000;
-            setTimeout(exitDownLittle, delay, element);
-            delay+=7000;
-            return delay;
-        }
-
-        if (imgNum == 3 || imgNum == 5 || imgNum == 6 || imgNum == 9 ) {
-            setTimeout(exitLeftLittle, delay, element);
-            delay+=4000;
-            setTimeout(exitDownLittle, delay, element);
-            delay+=7000;
-            return delay;
-        }
-
-        if (imgNum == 11 || imgNum == 12) {
-            setTimeout(exitLeftLittle, delay, element);
-            delay+=4000;
-            setTimeout(exitUpLittle, delay, element);
-            delay+=3000;
-            return delay;
-        }
-
-        if (imgNum == 10) {
-            setTimeout(exitRightLittle, delay, element);
-            delay+=4000;
-            setTimeout(exitUpLittle, delay, element);
-            delay+=3000;
-            return delay;
-        }
+    function ImgToPath(imgNum, element) {
+        return new Promise(function(resolve, reject) {
+            if (imgNum == 1 || imgNum == 2 || imgNum == 4 || imgNum == 7 || imgNum == 8) {
+                exitRightLittle(element).then(function(flag1) {
+                    if (flag1) exitDownLittle(element).then(function(flag2) {
+                        if (flag2) resolve(true);
+                    });
+                });
+            } else if (imgNum == 3 || imgNum == 5 || imgNum == 6 || imgNum == 9 ) {
+                exitLeftLittle(element).then(function(flag1) {
+                    if (flag1) exitDownLittle(element).then(function(flag2) {
+                        if (flag2) resolve(true);
+                    });
+                });
+            } else if (imgNum == 11 || imgNum == 12) {
+                exitLeftLittle(element).then(function(flag1) {
+                    if (flag1) exitUpLittle(element).then(function(flag2) {
+                        if (flag2) resolve(true);
+                    });
+                });
+            } else if (imgNum == 10) {
+                exitRightLittle(element).then(function(flag1) {
+                    if (flag1) exitUpLittle(element).then(function(flag2) {
+                        if (flag2) resolve(true);
+                    });
+                });
+            }
+        });
     }
 
-    function PathToImg(imgNum, delay, element) {
-        delay += 1000;
-        if (imgNum == 1 || imgNum == 2 || imgNum == 4 || imgNum == 7 || imgNum == 8) {
-            setTimeout(moveUpLittle, delay, element);
-            delay+=7000;
-            setTimeout(moveLeftLittle, delay, element);
-            delay += 4000;
-            return delay;
-        }
-
-        else if (imgNum == 3 || imgNum == 5 || imgNum == 6 || imgNum == 9) {
-            setTimeout(moveUpLittle, delay, element);
-            delay+=7000;
-            setTimeout(moveRightLittle, delay, element);
-            delay += 4000;
-            return delay;
-        }
-
-        else if (imgNum == 11 || imgNum == 12) {
-            setTimeout(moveDownLittle, delay, element);
-            delay+=3000;
-            setTimeout(moveRightLittle, delay, element);
-            delay += 4000;
-            return delay;
-        }
-
-        else if (imgNum == 10) {
-            setTimeout(moveDownLittle, delay, element);
-            delay += 3000;
-            setTimeout(moveLeftLittle, delay, element);
-            delay += 4000;
-            return delay;
-        }
+    function PathToImg(imgNum, element) {
+        return new Promise(function(resolve, reject) {
+            if (imgNum == 1 || imgNum == 2 || imgNum == 4 || imgNum == 7 || imgNum == 8) {
+                moveUpLittle(element).then(function(flag1) {
+                    if (flag1) moveLeftLittle(element).then(function(flag2) {
+                        if (flag2) resolve(true);
+                    });
+                });
+            } else if (imgNum == 3 || imgNum == 5 || imgNum == 6 || imgNum == 9) {
+                moveUpLittle(element).then(function(flag1) {
+                    if (flag1) moveRightLittle(element).then(function(flag2) {
+                        if (flag2) resolve(true);
+                    });
+                });
+            } else if (imgNum == 11 || imgNum == 12) {
+                moveDownLittle(element).then(function(flag1) {
+                    if (flag1) moveRightLittle(element).then(function(flag2) {
+                        if (flag2) resolve(true);
+                    });
+                });
+            } else if (imgNum == 10) {
+                moveDownLittle(element).then(function(flag1) {
+                    if (flag1) moveLeftLittle(element).then(function(flag2) {
+                        if (flag2) resolve(true);
+                    });
+                });
+            }
+        });
     }
 
-    function PathToPath(pathNum1, pathNum2, delay, element) {
-        delay += 1000;
-        if (sub == 0) {
-            return delay;
-        }
-        var sub = pathNum2 - pathNum1;
-        var posDirection = true;
-
-        if (sub < 0) {
-            sub = (-1) * sub;
-            posDirection = false;
-        }
-
-        if (sub == 1) {
-            if (posDirection) {
-                if (pathNum1 % 2) {
-                    setTimeout(moveRightOneBlock, delay, element);
-                    delay += 9000;
-                    return delay;
+    function PathToPath(pathNum1, pathNum2, element) {
+        return new Promise(function(resolve, reject) {
+            var sub = pathNum2 - pathNum1;
+            var posDirection = true;
+            if (sub < 0) {
+                sub = (-1) * sub;
+                posDirection = false;
+            }
+            
+            if (sub == 0) {
+                resolve(true);
+            } else if (sub == 1) {
+                if (posDirection) {
+                    if (pathNum1 % 2) {
+                        moveRightOneBlock(element).then(function(flag) {
+                            if (flag) resolve(true);
+                        });
+                    } else {
+                        moveLeftOneBlock(element).then(function(flag1) {
+                            if (flag1) moveDownOneBlock(element).then(function(flag2) {
+                                if (flag2) resolve(true);
+                            });
+                        });
+                    }
                 } else {
-                    setTimeout(moveLeftOneBlock, delay, element);
-                    delay += 9000;
-                    setTimeout(moveDownOneBlock, delay, element);
-                    delay += 9000;
-                    return delay;
+                    if (pathNum1 % 2) {
+                        moveRightOneBlock(element).then(function(flag1) {
+                            if (flag1) moveUpOneBlock(element).then(function(flag2) {
+                                if (flag2) resolve(true);
+                            });
+                        });
+                    } else {
+                        moveLeftOneBlock(element).then(function(flag) {
+                            if (flag) resolve(true);
+                        });
+                    }
                 }
-            } else {
-                if (pathNum1 % 2) {
-                    setTimeout(moveRightOneBlock, delay, element);
-                    delay += 9000;
-                    setTimeout(moveUpOneBlock, delay, element);
-                    delay += 9000;
-                    return delay;
+            } else if (sub == 2) {
+                if (posDirection) {
+                    moveDownOneBlock(element).then(function(flag) {
+                        if (flag) resolve(true);
+                    });
                 } else {
-                    setTimeout(moveLeftOneBlock, delay, element);
-                    delay += 9000;
-                    return delay;
+                    moveUpOneBlock(element).then(function(flag) {
+                        if (flag) resolve(true);
+                    });
                 }
-            }
-        }
-
-        if (sub == 5) {
-            if (posDirection) {
-                setTimeout(moveRightOneBlock, delay, element);
-                delay += 9000;
-                setTimeout(moveDownOneBlock, delay, element);
-                delay += 9000;
-                setTimeout(moveDownOneBlock, delay, element);
-                delay += 9000;
-            } else {
-                setTimeout(moveLeftOneBlock, delay, element);
-                delay += 9000;
-                setTimeout(moveUpOneBlock, delay, element);
-                delay += 9000;
-                setTimeout(moveUpOneBlock, delay, element);
-                delay += 9000;
-            }
-            return delay;
-        }
-
-        if (sub == 3) {
-            if (posDirection) {
-                if (pathNum1 % 2) {
-                    setTimeout(moveDownOneBlock, delay, element);
-                    delay += 9000;
-                    setTimeout(moveRightOneBlock, delay, element);
-                    delay += 9000;
+            } else if (sub == 3) {
+                if (posDirection) {
+                    if (pathNum1 % 2) {
+                        moveDownOneBlock(element).then(function(flag1) {
+                            if (flag1) moveRightOneBlock(element).then(function(flag2) {
+                                if (flag2) resolve(true);
+                            });
+                        });
+                    } else {
+                        moveLeftOneBlock(element).then(function(flag1) {
+                            if (flag1) moveDownOneBlock(element).then(function(flag2) {
+                                if (flag2) resolve(true);
+                            });
+                        });
+                    }
                 } else {
-                    setTimeout(moveLeftOneBlock, delay, element);
-                    delay += 9000;
-                    setTimeout(moveDownOneBlock, delay, element);
-                    delay += 9000;
+                    if (pathNum2 % 2) {
+                        moveUpOneBlock(element).then(function(flag1) {
+                            if (flag1) moveLeftOneBlock(element).then(function(flag2) {
+                                if (flag2) resolve(true);
+                            });
+                        });
+                    } else {
+                        moveRightOneBlock(element).then(function(flag1) {
+                            if (flag1) moveUpOneBlock(element).then(function(flag2) {
+                                if (flag2) moveUpOneBlock(element).then(function(flag3) {
+                                    if (flag3) resolve(true);
+                                });
+                            });
+                        });
+                    }
                 }
-            } else {
-                if (pathNum2 % 2) {
-                    setTimeout(moveUpOneBlock, delay, element);
-                    delay += 9000;
-                    setTimeout(moveLeftOneBlock, delay, element);
-                    delay += 9000;
+            } else if (sub == 4) {
+                if (posDirection) {
+                    moveDownOneBlock(element).then(function(flag1) {
+                        if (flag1) moveDownOneBlock(element).then(function(flag2) {
+                            if (flag2) resolve(true);
+                        });
+                    });
                 } else {
-                    setTimeout(moveRightOneBlock, delay, element);
-                    delay += 9000;
-                    setTimeout(moveUpOneBlock, delay, element);
-                    delay += 9000;
-                    setTimeout(moveUpOneBlock, delay, element);
-                    delay += 9000;
+                    moveUpOneBlock(element).then(function(flag1) {
+                        if (flag1) moveUpOneBlock(element).then(function(flag2) {
+                            if (flag2) resolve(true);
+                        });
+                    });
+                }
+            } else if (sub == 5) {
+                if (posDirection) {
+                    moveRightOneBlock(element).then(function(flag1) {
+                        if (flag1) moveDownOneBlock(element).then(function(flag2) {
+                            if (flag2) moveDownOneBlock(element).then(function(flag3) {
+                                if (flag3) resolve(true);
+                            });
+                        });
+                    });
+                } else {
+                    moveLeftOneBlock(element).then(function(flag1) {
+                        if (flag1) moveUpOneBlock(element).then(function(flag2) {
+                            if (flag2) moveUpOneBlock(element).then(function(flag3) {
+                                if (flag3) resolve(true);
+                            });
+                        });
+                    });
                 }
             }
-            return delay;
-        }
-
-        if (sub == 4) {
-            if (posDirection) {
-                setTimeout(moveDownOneBlock, delay, element);
-                delay += 9000;
-                setTimeout(moveDownOneBlock, delay, element);
-                delay += 9000;
-            } else {
-                setTimeout(moveUpOneBlock, delay, element);
-                delay += 9000;
-                setTimeout(moveUpOneBlock, delay, element);
-                delay += 9000;
-            }
-            return delay;
-        }
-
-        if (sub == 2) {
-            if (posDirection) {
-                setTimeout(moveDownOneBlock, delay, element);
-                delay += 9000;
-                return delay;
-            } else {
-                setTimeout(moveUpOneBlock, delay, element);
-                delay += 9000;
-                return delay;
-            }
-        }
+        });
     }
 }
