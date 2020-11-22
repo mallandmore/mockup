@@ -120,7 +120,6 @@ function reset_drag(e) {
     }
 }
 
-// myComments = [];
 function create_comment_at_event(e){
     create_comment(e.pageX, e.pageY);
 }
@@ -132,44 +131,37 @@ function create_comment(positionLeft, positionTop){
     document.body.appendChild(comment);
     comment.style.position = "absolute";
     comment.style.left = positionLeft+'px';
-    // comment.style.left = 600 + (positionLeft - window.innerWidth/2);
     comment.style.top = positionTop+'px';
-    comment.setAttribute("commentKey","none");//
+    comment.setAttribute("commentKey","none");
     comment.innerHTML = '<div class = "pinComment_thread"><div class = "pinComment_thread_header"> <img class = "pinComment_author_profile"> <div class = "pinComment_author_info"><div class = "pinComment_author_name"></div><div class = "pinComment_time"></div></div><img class = "pinComment_delete" src = "src/delete.png"></div><div class = "pinComment_input"><input class = "pinComment_text_input"><input type="submit" class="pinComment_text_input_enter" value="comment"></div></div></div>';
     comment.getElementsByClassName("pinComment_author_profile")[0].src = "src/"+myName+"_profile.png";
-    comment.getElementsByClassName("pinComment_author_name")[0].innerHTML = myName;//
+    comment.getElementsByClassName("pinComment_author_name")[0].innerHTML = myName;
 
     var today = new Date();
     var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     comment.getElementsByClassName("pinComment_time")[0].innerHTML = today.getHours() + ":" + today.getMinutes() + " " + months[today.getMonth()] + " " + today.getDate();
 
     var comment_text_input = comment.getElementsByClassName("pinComment_text_input")[0];
-    comment_text_input.id = "pinComment_text_input";//
-    // comment_text_input.addEventListener("keyup", send_comment, false);
+    comment_text_input.id = "pinComment_text_input";
     comment_text_input.addEventListener("keyup", function(event) {
         if (event.key === "Enter") {send_comment();}
     });
 
     var enter = comment.getElementsByClassName("pinComment_text_input_enter")[0];
     enter.onclick = send_comment;
-    // enter.addEventListener("click", send_comment, false);
-    // console.log(comment.getElementsByClassName("pinComment_delete"));
     comment.getElementsByClassName("pinComment_delete")[0].onclick = function(){
-        // console.log(comment_thread.getAttribute("key"));
         firebase.database().ref(groupId+'/messenger/'+comment.getAttribute("commentKkey")).remove();
-        // firebase.database().ref(groupId+'/messenger/').child(comment_thread.getAttribute("key")).remove();
         comment.remove();
     };
 
     function send_comment(){
-        // if (event.key === "Enter") {
         if (comment.getAttribute("commentKey") === "none"){
             var url = location.href.split("?")[0].split("/");
             var url_id = url[url.length-1];
             //When first entered the comment
             var commentKey = firebase.database().ref(groupId+'/messenger/').push({
                 type: "comment",
-                left: Math.min((positionLeft - (window.innerWidth - 1200)/2), positionLeft),
+                left: 600 + (positionLeft - window.innerWidth/2),
                 top: positionTop,
                 thread: "none",
                 url: url_id
@@ -186,11 +178,8 @@ function create_comment(positionLeft, positionTop){
             //When modified the comment
             firebase.database().ref(groupId+'/messenger/'+comment.getAttribute("commentKey")+"/thread/" + comment.getAttribute("threadKey")).child("string").set(comment_text_input.value); //child.set로 해야되나?
         }
-        // comment.readOnly = true;
         comment.remove();
-        // }
     }
-//
     return comment;
 }
 
@@ -199,17 +188,8 @@ function create_comment(positionLeft, positionTop){
 function create_old_thread(){
     var pinComment_thread = document.createElement("div");
     pinComment_thread.className = "pinComment_thread";
-    pinComment_thread.innerHTML = '<div class = "pinComment_thread_header"><img class = "pinComment_author_profile"><div class = "pinComment_author_info"><div class = "pinComment_author_name"></div><div class = "pinComment_time"></div></div><img class = "pinComment_edit" src = "src/modify.png"><img class = "pinComment_delete" src = "src/delete.png"></div><div class = "pinComment_input"><input type="text" class = "pinComment_text_readOnly"></div></div>';
+    pinComment_thread.innerHTML = '<div class = "pinComment_thread_header"><img class = "pinComment_author_profile"><div class = "pinComment_author_info"><div class = "pinComment_author_name"></div><div class = "pinComment_time"></div></div><img class = "pinComment_edit" src = "src/modify.png"><img class = "pinComment_delete" src = "src/delete.png"></div><div class = "pinComment_input"><div class = "pinComment_text_readOnly"></div></div>';
 
-//
-    // var comment_text_input = comment.getElementsByClassName("pinComment_text_input")[0];
-    // comment_text_input.id = "pinComment_text_input";//
-    // comment_text_input.addEventListener("keyup", function(event) {
-    //     if (event.key === "Enter") {send_comment(null);}
-    // });
-
-    //
-//
     return pinComment_thread;
 }
 
@@ -222,40 +202,3 @@ function getParameterByName(name) {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
-
-
-
-
-/*Modify
-    var modify = document.createElement("img");
-    modify.className = "pinComment_thread";
-    comment_thread.appendChild(modify);
-    modify.src = "src/modify.png";
-    modify.width = comment.offsetHeight;
-    modify.height = comment.offsetHeight;
-    //
-    modify.onclick = function(){
-        comment.readOnly = false;
-    };
-    //
-
-    var enter = document.createElement("input",{type:"submit"});
-    enter.value
-    enter.className = "pinComment_text_input_enter";
-    comment_thread.appendChild(enter);
-*/
-
-    
-/*Delete
-    var deletion = document.createElement("img");
-    deletion.className = "pinComment_thread";
-    comment_thread.appendChild(deletion);
-    deletion.src = "src/delete.png";
-    deletion.width = comment.offsetHeight;
-    deletion.height = comment.offsetHeight;
-    deletion.onclick = function(){
-        // console.log(comment_thread.getAttribute("key"));
-        firebase.database().ref(groupId+'/messenger/').child(comment_thread.getAttribute("key")).remove();
-        comment_thread.remove();
-    };
-*/
