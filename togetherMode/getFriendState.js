@@ -119,7 +119,7 @@ function traceTogetherModeState() { // always on
             friendTogetherModeDB.set('on');
         } else if ( togetherModeState.split(':')[0] == 'reject' ) { 
             var changing_key = togetherModeState.split(':')[1];
-            messengerDB.child('messenger').child(changing_key).set({ 
+            messengerDB.child(changing_key).set({ 
                 author: studentId,
                 type: "shopping_together_info", 
                 string: "Rejected " + friendName + "'s request." 
@@ -224,7 +224,7 @@ function renderFriendCursor() {
     if (( friendPositionX + friendScrollX ) < 0){
         friendCursor.style.left = 0;
     } else if (( friendPositionX + friendScrollX ) > myContentsWidth - friendCursorSize) {
-        friendCursor.style.left = myContentsWidth - cursorSize;
+        friendCursor.style.left = myContentsWidth - friendCursorSize;
     } else {
         friendCursor.style.left = ( friendPositionX + friendScrollX ) + "px";
     }
