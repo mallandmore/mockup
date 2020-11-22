@@ -165,14 +165,13 @@ window.onload = function() {
                         + myName + "</div> <div class = 'pinComment_time'>" + time + "</div></div></div>" +
                         "<div class = 'pinComment_input'><div class = 'pinComment_text_readOnly'>" + string + 
                         "</div></div>";
-                    } else if (receiver == studentId) {
+                } else if (sender == friendId) {
                     message.innerHTML = "<div class = 'pinComment_thread_header'>" +
                         "<img class = 'pinComment_author_profile' src = 'src/profile.png'>" +
                         "<div class = 'pinComment_author_info'>" + "<div class = 'pinComment_author_name'>"
                         + friendName + "</div> <div class = 'pinComment_time'>" + time + "</div></div></div>" +
                         "<div class = 'pinComment_input'><div class = 'pinComment_text_readOnly'>" + string + 
                         "</div></div>";
-
                 }
             } else if (type == "chat") {
                 const message = document.createElement("div");
