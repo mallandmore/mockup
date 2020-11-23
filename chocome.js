@@ -1,10 +1,4 @@
-// detailPage.html에다가 간단하게 student id만 onlineUsers/ 에 push하는 js코드 만들어서 <head>에 삽입!!
-
 var studentId = getParameterByName('studentId');
-
-var userData = firebase.database().ref('/onlineUsers/').push({
-    uid : studentId
-}).key;
 
 function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -110,14 +104,19 @@ window.addEventListener('load', function() {
         }
     }
 
-    window.addEventListener('beforeunload', function(e) {
-        deleteChocome();
-    });
-
+    setYetOnline();
     showHuman();
-    var myChocomeKey = newChocomeAdd();
-    listenToClick();
-    moveHumans();
+    var myChocomeKey = null;
+    newChocomeAdd().then(function(chocomeKey) {
+        myChocomeKey = chocomeKey;
+        console.log(myChocomeKey);
+        listenToClick();
+        window.addEventListener('beforeunload', function(e) {
+            deleteChocome(chocomeKey);
+        });
+        moveHumans(chocomeKey);
+    });
+    //listenToClick();
 
     var d = new Date();
     var insertionTime = d.getTime();
@@ -125,16 +124,20 @@ window.addEventListener('load', function() {
     function showHuman() {
         firebase.database().ref('/chocome/').on('value', function(snapshot){
             snapshot.forEach(function(childSnapshot) {
-                // const removeQueueEntry = firebase.database().ref('/removeQueue/');
-                // removeQueueEntry.on('value', function(removeSnapshot){
-                //     removeSnapshot.forEach(function(removeChildSnapshot) {
-                //         const removeKey = removeChildSnapshot.val().key;
-                //         var removeHuman = document.getElementById(removeKey);
-                //         if (removeHuman != null) removeHuman.remove();
-                //         removeQueueEntry.child(removeChildSnapshot.key).remove();
-                //     });
-                // });
                 const uid = childSnapshot.val().userId;
+                
+                const removeQueueEntry = firebase.database().ref('/removeQueue/');
+                removeQueueEntry.on('value', function(removeSnapshot){
+                    removeSnapshot.forEach(function(removeChildSnapshot) {
+                        var removeUser = removeChildSnapshot.val().uid;
+                        var removeHuman = document.getElementById(removeUser);
+                        if (removeHuman != null) {
+                            removeHuman.remove();
+                        }
+                        removeQueueEntry.child(removeChildSnapshot.key).remove();
+                    });
+                });
+                
                 if (uid != studentId) {
                     const curr = childSnapshot.val().currImg;
                     const prev = childSnapshot.val().prevImg;
@@ -143,7 +146,8 @@ window.addEventListener('load', function() {
                     const movingOrNot = childSnapshot.val().isMoving;
                     const movingTime = childSnapshot.val().movingStartTime;
                     //const drawnOrNot = childSnapshot.val().alreadyDrawn;
-                    if (document.getElementById(childSnapshot.key) == null){
+                    console.log(uid);
+                    if (document.getElementById(uid) == null){
                         if (insertionTime > movingTime && movingOrNot) {
                             var otherHuman = document.createElement("img");
                             otherHuman.src = "src/human.gif";
@@ -158,7 +162,7 @@ window.addEventListener('load', function() {
                                 otherHuman.style.transform = 'rotate(-90deg)';
                             }
                             otherHuman.setAttribute('key', childSnapshot.key);
-                            otherHuman.id = childSnapshot.key;
+                            otherHuman.id = uid;
                             document.body.appendChild(otherHuman);
                             //firebase.database().ref('/chocome/'+childSnapshot.key).update({alreadyDrawn : true});
                         } else if (!movingOrNot) {
@@ -181,9 +185,8 @@ window.addEventListener('load', function() {
                                 }
                             }
                             otherHuman.setAttribute('key', childSnapshot.key);
-                            otherHuman.id = childSnapshot.key;
+                            otherHuman.id = uid;
                             document.body.appendChild(otherHuman);
-                            //firebase.database().ref('/chocome/'+childSnapshot.key).update({alreadyDrawn : true});
                         }
                     }
                 }
@@ -192,17 +195,35 @@ window.addEventListener('load', function() {
     }
     
     function newChocomeAdd () {
-        var newChocome = firebase.database().ref('/chocome/').push({
-            prevImg : 0,
-            currImg : 0,
-            initPath : overallPos,
-            isMoving : false,
-            direction : randDirection,
-            userId : studentId,
-            movingStartTime : 0,
-            //alreadyDrawn : false
-        }).key;
-        return newChocome;
+        return new Promise (function(resolve, reject) {
+            var rootRef = firebase.database().ref('/chocome/');
+            var newChocome = null;
+            var yetOnlineOrNot = false;
+            rootRef.once('value').then(function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    if (studentId == childSnapshot.val().userId) {
+                        yetOnlineOrNot = true;
+                        newChocome = childSnapshot.key;
+                    }
+                })
+            }).then(function() {
+                if (!yetOnlineOrNot) {
+                    newChocome = firebase.database().ref('/chocome/').push({
+                        prevImg : 0,
+                        currImg : 0,
+                        initPath : overallPos,
+                        isMoving : false,
+                        direction : randDirection,
+                        userId : studentId,
+                        movingStartTime : 0,
+                        yetOnline : false
+                    }).key;
+                }
+            }).then(function() {
+                console.log(newChocome);
+                resolve(newChocome);
+            })
+        })
     }
 
     function listenToClick() {
@@ -223,7 +244,8 @@ window.addEventListener('load', function() {
                                 prevImg : curr,
                                 currImg : imgNum,
                                 movingStartTime : time,
-                                isMoving : true
+                                isMoving : true,
+                                yetOnline : true
                             });
                         });
                     };
@@ -232,14 +254,26 @@ window.addEventListener('load', function() {
         }
     }
 
-    function moveHumans() {
+    function setYetOnline() {
+        var rootRef = firebase.database().ref('/chocome/');
+        rootRef.once('value').then(function(snapshot) {
+            snapshot.forEach(function(childSnapshot) {
+                if (studentId == childSnapshot.val().userId) {
+                    rootRef.child(childSnapshot.key).update({yetOnline : false});
+                }
+            })
+        })
+    }
+
+    function moveHumans(myChocomeKey) {
         firebase.database().ref('/chocome/').on('child_changed', function(childSnapshot, prevValue) {
             //console.log(childSnapshot.key);
             const initPath = childSnapshot.val().initPath;
             const movingTime = childSnapshot.val().movingStartTime;
             const movingOrNot = childSnapshot.val().isMoving;
             const uid = childSnapshot.val().userId;
-            var eachHuman = document.getElementById(childSnapshot.key);
+            console.log(uid);
+            var eachHuman = document.getElementById(uid);
             if (uid != studentId) {
                 if (movingOrNot && insertionTime < movingTime) {
                     console.log(childSnapshot.key);
@@ -249,13 +283,8 @@ window.addEventListener('load', function() {
                     console.log(curr);
                     console.log(initPath);
                     pathAlgo(prev, curr, initPath, eachHuman).then(function(flag) {
-                        console.log(flag);
                         if (flag)  {
-                            console.log(flag);
-                            console.log(myChocomeKey);
-                            console.log(childSnapshot.key);
-                            if (myChocomeKey == childSnapshot.key)
-                                firebase.database().ref('/chocome/'+childSnapshot.key).update({isMoving : false});
+                            firebase.database().ref('/chocome/'+childSnapshot.key).update({isMoving : false});
                         }
                     });
                 }
@@ -264,12 +293,18 @@ window.addEventListener('load', function() {
     }
 
     function deleteChocome() {
-        var rootRef = firebase.database().ref('/chocome/').child(myChocomeKey);
-        firebase.database().ref('/removeQueue/').push({
-            key: myChocomeKey,
-            uid: studentId
-        });
-        rootRef.remove();
+        var rootRef = firebase.database().ref('/chocome/');
+        rootRef.once('value').then(function(snapshot) {
+            snapshot.forEach(function(childSnapshot) {
+                if (studentId == childSnapshot.val().userId && !childSnapshot.val().yetOnline) {
+                    firebase.database().ref('/removeQueue/').push({
+                        key: myChocomeKey,
+                        uid: studentId
+                    });
+                    firebase.database().ref('/chocome/'+childSnapshot.key).remove();
+                }
+            })
+        })
     }
     
     function move(element, direction, distance, duration) {
@@ -711,9 +746,4 @@ window.addEventListener('load', function() {
             }
         });
     }            
-})
-
-
-window.addEventListener('beforeunload', function(e) {
-    firebase.database().ref('/onlineUsers/'+userData).remove();
 })
