@@ -21,7 +21,7 @@ window.onload = function() {
             db.child('friends').child(studentId).child('goToLink').set(0);
         }
     })
-    
+
 
     db.child('friends').once('value').then(function(snapshot){
         snapshot.forEach(element => {
@@ -40,7 +40,7 @@ window.onload = function() {
         });
         document.getElementById('messenger_header').innerText = friendName;
     });
-    
+
     addUserMovementListener();
 
     db.child('messenger').on('value', function(snapshot){
@@ -71,7 +71,7 @@ window.onload = function() {
                     message_wrap.style.marginRight = "0px";
                     document.getElementById("messenger_body").appendChild(message_wrap).appendChild(message);
                     message.innerHTML = "<div class = 'shopping_together_request_label'>" +
-                    "Do you want to accept " + friendName + "'s request?" + "</div>" + 
+                    "Do you want to accept " + friendName + "'s request?" + "</div>" +
                     "<div class = 'shopping_together_request_buttons'>" +
                     "<div class = 'shopping_together_request_button' id = 'shopping_together_request_yes'>" + "yes" +
                     "</div>" + "<div class = 'shopping_together_request_button' id = 'shopping_together_request_no'>" +
@@ -147,14 +147,12 @@ window.onload = function() {
                 }
             } else if (type == "comment") {
                 element.child('thread').forEach(elementDD => {
-                    console.log(elementDD.key);
                     sender = elementDD.child('sender').val();
                     receiver = elementDD.child('receiver').val();
                     string = elementDD.child('string').val();
                     time = elementDD.child('time').val();
                 });
                 const url_key = element.child('url').val();
-                console.log(url_key);
                 const top = element.child('top').val();
                 const left = element.child('left').val();
                 const message = document.createElement("div");
@@ -164,20 +162,20 @@ window.onload = function() {
                 message_wrap.style.width = "230px";
                 message_wrap.style.marginLeft = "0px";
                 message_wrap.style.marginRight = "0px";
-                document.getElementById("messenger_body").appendChild(message_wrap).appendChild(message); 
+                document.getElementById("messenger_body").appendChild(message_wrap).appendChild(message);
                 if (sender == studentId) {
                     message.innerHTML = "<div class = 'pinComment_thread_header'>" +
-                    "<img class = 'pinComment_author_profile' src = 'src/profile.png'>" +
+                    "<img class = 'pinComment_author_profile' src = 'src/" + myName + "_profile.png'>" +
                     "<div class = 'pinComment_author_info'>" + "<div class = 'pinComment_author_name'>"
                     + myName + "</div> <div class = 'pinComment_time'>" + time + "</div></div></div>" +
-                    "<div class = 'pinComment_input'><div class = 'pinComment_text_readOnly'>" + string + 
+                    "<div class = 'pinComment_input'><div class = 'pinComment_text_readOnly'>" + string +
                     "</div></div>";
                 } else if (sender == friendId) {
                     message.innerHTML = "<div class = 'pinComment_thread_header'>" +
-                    "<img class = 'pinComment_author_profile' src = 'src/profile.png'>" +
+                    "<img class = 'pinComment_author_profile' src = 'src/" + friendName + "_profile.png'>" +
                     "<div class = 'pinComment_author_info'>" + "<div class = 'pinComment_author_name'>"
                     + friendName + "</div> <div class = 'pinComment_time'>" + time + "</div></div></div>" +
-                    "<div class = 'pinComment_input'><div class = 'pinComment_text_readOnly'>" + string + 
+                    "<div class = 'pinComment_input'><div class = 'pinComment_text_readOnly'>" + string +
                     "</div></div>";
                 }
                 message.addEventListener('click', function(){
@@ -213,9 +211,9 @@ window.onload = function() {
                     message.innerText = string;
                 }
             }
-            
+
             var objDiv = document.getElementById("messenger_body");
-            objDiv.scrollTop = objDiv.scrollHeight; 
+            objDiv.scrollTop = objDiv.scrollHeight;
         });
     });
 
