@@ -121,6 +121,20 @@ window.addEventListener('load', function() {
     var d = new Date();
     var insertionTime = d.getTime();
 
+    function humanOnBody() {
+        var otherHuman = document.createElement("div");
+        otherHuman.className = "human_with_state";
+        var humanImg = document.createElement("img");
+        humanImg.src = "src/human.gif";
+        humanImg.className = "human";
+        var stateImg = document.createElement("img");
+        stateImg.src = "src/lookState.png";
+        stateImg.className = "human_state";                            
+        otherHuman.appendChild(stateImg);
+        otherHuman.appendChild(humanImg);
+        return otherHuman;
+    }
+
     function showHuman() {
         firebase.database().ref('/chocome/').on('value', function(snapshot){
             snapshot.forEach(function(childSnapshot) {
@@ -145,44 +159,38 @@ window.addEventListener('load', function() {
                     const facingDir = childSnapshot.val().direction;
                     const movingOrNot = childSnapshot.val().isMoving;
                     const movingTime = childSnapshot.val().movingStartTime;
-                    //const drawnOrNot = childSnapshot.val().alreadyDrawn;
+                    const yetOnlineOrNot = childSnapshot.val().yetOnline;
                     console.log(uid);
                     if (document.getElementById(uid) == null){
                         if (insertionTime > movingTime && movingOrNot) {
-                            var otherHuman = document.createElement("img");
-                            otherHuman.src = "src/human.gif";
-                            otherHuman.className = "human";
+                            var otherHuman = humanOnBody();
                             otherHuman.style.left = (posOnImg[curr - 1])[0];
-                            console.log((posOnImg[curr - 1])[0]);
                             otherHuman.style.top = (posOnImg[curr - 1])[1];
-                            console.log((posOnImg[curr - 1])[1]);
                             if (curr % 3 == 1 || curr == 2 || curr == 8) {
-                                otherHuman.style.transform = 'rotate(90deg)';
+                                otherHuman.childNodes[1].style.transform = 'rotate(90deg)';
                             } else {
-                                otherHuman.style.transform = 'rotate(-90deg)';
+                                otherHuman.childNodes[1].style.transform = 'rotate(-90deg)';
                             }
+                            otherHuman.childNodes[0].style.visibility = 'visible';
                             otherHuman.setAttribute('key', childSnapshot.key);
                             otherHuman.id = uid;
                             document.body.appendChild(otherHuman);
-                            //firebase.database().ref('/chocome/'+childSnapshot.key).update({alreadyDrawn : true});
                         } else if (!movingOrNot) {
-                            var otherHuman = document.createElement("img");
-                            otherHuman.src = "src/human.gif";
-                            otherHuman.className = "human";
+                            var otherHuman = humanOnBody();
                             if (curr == 0) {
                                 var initPos = getPositionFromPath(initPath);
-                                console.log(initPos);
                                 otherHuman.style.left = initPos[0] - 8;
                                 otherHuman.style.top = initPos[1] - 8;
-                                otherHuman.style.transform = facingDir;
+                                otherHuman.childNodes[1].style.transform = facingDir;
                             } else {
                                 otherHuman.style.left = (posOnImg[curr - 1])[0];
                                 otherHuman.style.top = (posOnImg[curr - 1])[1];
-                                if (curr % 3 == 1 || curr == 5) {
-                                    otherHuman.style.transform = 'rotate(90deg)';
+                                if (curr % 3 == 1 || curr == 2 || curr == 8) {
+                                    otherHuman.childNodes[1].style.transform = 'rotate(90deg)';
                                 } else {
-                                    otherHuman.style.transform = 'rotate(-90deg)';
+                                    otherHuman.childNodes[1].style.transform = 'rotate(-90deg)';
                                 }
+                                otherHuman.childNodes[0].style.visibility = 'visible';
                             }
                             otherHuman.setAttribute('key', childSnapshot.key);
                             otherHuman.id = uid;
@@ -282,9 +290,11 @@ window.addEventListener('load', function() {
                     console.log(prev);
                     console.log(curr);
                     console.log(initPath);
+                    eachHuman.childNodes[0].style.visibility = 'hidden';
                     pathAlgo(prev, curr, initPath, eachHuman).then(function(flag) {
                         if (flag)  {
                             firebase.database().ref('/chocome/'+childSnapshot.key).update({isMoving : false});
+                            eachHuman.childNodes[0].style.visibility = 'visible';
                         }
                     });
                 }
@@ -341,22 +351,22 @@ window.addEventListener('load', function() {
     var verticalBlockDist = Number(rowPosition[1] - rowPosition[0]);
 
     function moveRightOneBlock(element) {
-        element.style.transform = 'rotate(-90deg)'
+        element.childNodes[1].style.transform = 'rotate(-90deg)'
         return move(element, 'right', horizontalBlockDist, 6000);
     }
 
     function moveLeftOneBlock(element) {
-        element.style.transform = 'rotate(90deg)';
+        element.childNodes[1].style.transform = 'rotate(90deg)';
         return move(element, 'left', horizontalBlockDist, 6000);
     }
 
     function moveUpOneBlock(element) {
-        element.style.transform = 'rotate(180deg)';
+        element.childNodes[1].style.transform = 'rotate(180deg)';
         return move(element, 'up', verticalBlockDist, 8000);
     }
 
     function moveDownOneBlock(element) {
-        element.style.transform = 'rotate(0deg)';
+        element.childNodes[1].style.transform = 'rotate(0deg)';
         return move(element, 'down', verticalBlockDist, 8000);
     }
 
@@ -374,42 +384,42 @@ window.addEventListener('load', function() {
     var downLittleDist = Number(img1Top - posY) + 8;
 
     function moveRightLittle(element) {
-        element.style.transform = 'rotate(-90deg)'
+        element.childNodes[1].style.transform = 'rotate(-90deg)'
         return move(element, 'right', horizontalLittleDist, 2000);
     }
 
     function moveLeftLittle(element) {
-        element.style.transform = 'rotate(90deg)';
+        element.childNodes[1].style.transform = 'rotate(90deg)';
         return move(element, 'left', horizontalLittleDist, 2000);
     }
 
     function moveUpLittle(element) {
-        element.style.transform = 'rotate(180deg)';
+        element.childNodes[1].style.transform = 'rotate(180deg)';
         return move(element, 'up', upLittleDist, 6000);
     }
 
     function moveDownLittle(element) {
-        element.style.transform = 'rotate(0deg)';
+        element.childNodes[1].style.transform = 'rotate(0deg)';
         return move(element, 'down', downLittleDist, 2000);
     }
 
     function exitRightLittle(element) {
-        element.style.transform = 'rotate(-90deg)'
+        element.childNodes[1].style.transform = 'rotate(-90deg)'
         return move(element, 'right', horizontalLittleDist, 2000);
     }
 
     function exitLeftLittle(element) {
-        element.style.transform = 'rotate(90deg)';
+        element.childNodes[1].style.transform = 'rotate(90deg)';
         return move(element, 'left', horizontalLittleDist, 2000);
     }
 
     function exitUpLittle(element) {
-        element.style.transform = 'rotate(180deg)';
+        element.childNodes[1].style.transform = 'rotate(180deg)';
         return move(element, 'up', downLittleDist, 2000);
     }
 
     function exitDownLittle(element) {
-        element.style.transform = 'rotate(0deg)';
+        element.childNodes[1].style.transform = 'rotate(0deg)';
         return move(element, 'down', upLittleDist, 6000);
     }
 
