@@ -872,10 +872,33 @@ html {
   border: none;
 }
 
-.human {
+.human_with_state {
   position: absolute;
-  width: 30px;
-  height: 30px;
+  width: 16px;
+  height: 32px;
+  left: 0px;
+  top: 0px;
+  display: inline-block;
+}
+
+.human_state {
+  visibility: hidden;
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2px;
+  width: 16px;
+  height: 14px;
+  left: 0px;
+  top: 0px;  
+}
+
+.human {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  width: 16px;
+  height: 16px;
   left: 0px;
   top: 0px;
   transform: 0(deg);
