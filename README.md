@@ -30,7 +30,7 @@ User1: [Sally](https://mallandmore.github.io/mockup/publish.html?groupId=0&stude
 User2: [Owen](https://mallandmore.github.io/mockup/publish.html?groupId=0&studentId=20210473)
 
 
-# Instruction
+### Instruction
 <!-- Instruction: Give a quick tour of the interface, and also show off some of the highlights of the interface. Note that this should not cover all features you have; focus on the most exciting and important parts. Use screenshots and callouts. -->
 
 *1. Users can chat with their friends.*
