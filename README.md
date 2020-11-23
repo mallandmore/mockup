@@ -1,4 +1,3 @@
-
 # Mall and More
 
 People refrain from offline shopping due to the spread of COVID-19, but existing online malls only support social interactions for efficient shopping and do not provide social interactions for social fun, which people enjoy during offline shopping. 
@@ -38,13 +37,13 @@ User2: [Owen](https://mallandmore.github.io/mockup/publish.html?groupId=0&studen
 ### Web Pages
 * **publish.html** : Thumbnail page
 * **publish.css** : Main style sheets
-* **detailPage1.html** to **detailPage12.html** : PDetail pages
+* **detailPage1.html** to **detailPage12.html** : Product description pages
 
 ### Features
-* **publish.js** : Implement messenger
-* **chocome.js** : Visualize other users' behaviors for the presence
-* **togetherMode/getFriendState.js** : Trace friend's data to following friend's location for real-time shopping together
-* **togetherMode/updateUserState.js** : Update user state to following friend's location for real-time shopping together
+* **publish.js** : Implement a messenger.
+* **chocome.js** : Visualize other users' behaviors.
+* **togetherMode/getFriendState.js** : Trace friend's data to follow friend's location for real-time shopping together.
+* **togetherMode/updateUserState.js** : Update user state to follow friend's location for real-time shopping together.
 * **pinComment.js** : Create space-based comments for non-real-time communication.
 
 
