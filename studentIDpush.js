@@ -1,11 +1,24 @@
 var studentId = getParameterByName('studentId');
 
-var userData = firebase.database().ref('/onlineUsers/').push({
-    uid : studentId
-}).key;
+window.addEventListener('load', function() {
+    window.addEventListener('beforeunload', function(e) {
+        deleteChocome();
+    });
 
-window.addEventListener('beforeunload', function(e) {
-    firebase.database().ref('/onlineUsers/'+userData).remove();
+    function deleteChocome() {
+        var rootRef = firebase.database().ref('/chocome/');
+        rootRef.once('value').then(function(snapshot) {
+            snapshot.forEach(function(childSnapshot) {
+                if (studentId == childSnapshot.val().userId && childSnapshot.val().yetOnline) {
+                    firebase.database().ref('/removeQueue/').push({
+                        key: myChocomeKey,
+                        uid: studentId
+                    });
+                    firebase.database().ref('/chocome/'+childSnapshot.key).remove();
+                }
+            })
+        })
+    }
 })
 
 function getParameterByName(name) {
