@@ -30,6 +30,32 @@ User1: [Sally](https://mallandmore.github.io/mockup/publish.html?groupId=0&stude
 User2: [Owen](https://mallandmore.github.io/mockup/publish.html?groupId=0&studentId=20210473)
 
 
+# Instruction
+<!-- Instruction: Give a quick tour of the interface, and also show off some of the highlights of the interface. Note that this should not cover all features you have; focus on the most exciting and important parts. Use screenshots and callouts. -->
+
+*1. Users can chat with their friends.*
+![](https://i.imgur.com/7EEn2Zs.png)
+
+*2. Users can request 'Shopping together mode' to their friends.*
+![](https://i.imgur.com/80qDBX9.png)
+
+*3. Users can see the location of their friends' mouse cursors on the 'Shopping together mode'.*
+![](https://i.imgur.com/iJYAO9o.png)
+
+*4. Users can follow what pages their friends actually see on the 'Shopping together mode'. (Green frame means that the friend is following your screen. And blue frame means that you are following the friend's screen.)*
+![](https://i.imgur.com/7HweHSY.png)
+![](https://i.imgur.com/G7QV92e.jpg)
+
+*5. Users can create their comments on the exact position they want to leave it.*
+![](https://i.imgur.com/VP6RLFD.jpg)
+
+*6. Users can see their friends' comments anytime.*
+![](https://i.imgur.com/VX0t5ps.jpg)
+
+*7. Users can see where other users are and what they are doing with the moving cute characters.*
+![](https://i.imgur.com/Emjt9XN.png)
+
+
 ## Code description
 ### Set-Up
 * **connectToFirebase.js** : Initialize and set up Firebase Realtime Database.
