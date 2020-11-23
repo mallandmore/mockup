@@ -117,6 +117,9 @@ function getParameterByName(name) {
 
 
 function goToLink(linkid) {
+    if(curKeyisC){
+        return;
+    }
     if(isFollowing()){
         stopFollowing();
     }

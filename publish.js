@@ -7,8 +7,22 @@ var friendId;
 var friendName;
 
 var changing_key;
+var curKeyisC;
 
 window.onload = function() {
+
+
+    window.addEventListener('keydown', function(e) {
+        if(e.code=='KeyC'){
+            curKeyisC = true;
+        }
+    });    
+    window.addEventListener('keyUp', function(e) {
+        if(e.code=='KeyC'){
+            curKeyisC = false;
+        }
+    });
+
 
     studentId = getParameterByName('studentId');
     groupId = getParameterByName('groupId');
