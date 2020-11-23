@@ -93,12 +93,12 @@ window.addEventListener('load', function() {
 
         if (imgNum % 3 == 1 || imgNum == 2 || imgNum == 8) {
             let a = [];
-            a.push(imgRight - 15);
+            a.push(imgRight - 8);
             a.push(imgTop);
             posOnImg.push(a);
         } else {
             let b = [];
-            b.push(imgLeft - 15);
+            b.push(imgLeft - 8);
             b.push(imgTop);
             posOnImg.push(b);
         }
@@ -172,8 +172,8 @@ window.addEventListener('load', function() {
                             if (curr == 0) {
                                 var initPos = getPositionFromPath(initPath);
                                 console.log(initPos);
-                                otherHuman.style.left = initPos[0] - 15;
-                                otherHuman.style.top = initPos[1] - 15;
+                                otherHuman.style.left = initPos[0] - 8;
+                                otherHuman.style.top = initPos[1] - 8;
                                 otherHuman.style.transform = facingDir;
                             } else {
                                 otherHuman.style.left = (posOnImg[curr - 1])[0];
@@ -370,8 +370,8 @@ window.addEventListener('load', function() {
     var posY = rowPosition[0];
 
     var horizontalLittleDist = Number(posX - img0Right);
-    var upLittleDist = Number(posY - img0Top) - 15;
-    var downLittleDist = Number(img1Top - posY) + 15;
+    var upLittleDist = Number(posY - img0Top) - 8;
+    var downLittleDist = Number(img1Top - posY) + 8;
 
     function moveRightLittle(element) {
         element.style.transform = 'rotate(-90deg)'
