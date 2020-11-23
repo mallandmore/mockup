@@ -12,14 +12,16 @@ var curKeyisC;
 window.onload = function() {
 
 
-    window.addEventListener('keydown', function(e) {
-        if(e.code=='KeyC'){
+    window.addEventListener('keydown', function(downKey) {
+        if(downKey.code == 'KeyC'){
             curKeyisC = true;
+            console.log(curKeyisC);
         }
     });    
-    window.addEventListener('keyUp', function(e) {
-        if(e.code=='KeyC'){
+    window.addEventListener('keyup', function(upKey) {
+        if(upKey.code == 'KeyC'){
             curKeyisC = false;
+            console.log(curKeyisC);
         }
     });
 
