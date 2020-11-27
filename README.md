@@ -10,7 +10,7 @@ We designed and implemented 1) visualizing other users' behaviors for the presen
 
 We set the situation that two friend, Sally and Owen, are shopping together. Go to the prototype link below with your firend(one by one or open both link alone). Then you can test the three features we implemented.
 
-* In case of first feature(visualizing other users' behaviors), It may be hard to check one or two people. This feature reacts based on users who visiting our prototype.
+* You can see the cute characters moving on the thumbnail page, each of which indicate the movement of another person accessing our website at that time. If there is no one accessing our web site than you, you will see only one character in either Sally's and Owen's web page. To test its function, you can visit some of the product detail pages by clicking the product thumbnails in Sally(or Owen)'s page and then watch how the character of her(him) moves in the other one's page.
 
 * Press C key and click anywhere to leave a comment there. In this prototype, we didn't implement 'mention' function. it is automatically shown only to friend.(Because in this prototype each user has only one friend.)
 
