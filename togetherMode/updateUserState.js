@@ -1,8 +1,12 @@
 // const defaultLink = 'file:///Users/oooo/Documents/GitHub/mockup/';
+const defaultLink = 'file:///C:/Users/qkek0/Documents/GitHub/mockup/';
+
 // const defaultLink = 'file:///C:/Users/SketchLab/Documents/GitHub/mockup/';
-const defaultLink = 'https://mallandmore.github.io/mockup/';
+// const defaultLink = 'https://mallandmore.github.io/mockup/';
 
 // variables for user cursor postion
+
+
 var positionLeft = 0;
 var positionTop = 0;
 var scrollY = window.pageYOffset;
@@ -89,8 +93,13 @@ function stopFollowing(){
     document.getElementById('statusRemark').style.visibility = 'hidden';
     document.getElementById('body_frame').style.visibility = "hidden";
     updateUserFollowingDB();
+    reloadForPrivatePage();
 }
 function startFollowing(fid){
+    if(followingFriend != fid){
+        toastr.info("Start to following " + friendName);
+        reloadForPrivatePage();
+    }
     followingFriend = fid;
 
     document.getElementById('followingButton').style.visibility = 'hidden';
@@ -106,7 +115,12 @@ function isFollowing() {
     return (followingFriend != null);
 }
 
-
+function reloadForPrivatePage(){
+    var bagPage = defaultLink + "shoppingBag.html";
+    if (location.href.split('?')[0] == bagPage){
+        window.location.href = bagPage + '?groupId=' + groupId + '&studentId=' + studentId ;
+    }
+}
 
 function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");

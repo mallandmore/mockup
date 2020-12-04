@@ -9,6 +9,8 @@
         <script src = "https://www.gstatic.com/firebasejs/8.0.1/firebase.js"></script>
         <link href = 'http://fonts.googleapis.com/css?family=Roboto' rel = 'stylesheet' type = 'text/css'>
         <link rel = "stylesheet" href = "publish.css">
+        <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+
         <script src="connectToFirebase.js"></script>
         <script src="./togetherMode/getFriendState.js"></script>
         <script src="./togetherMode/updateUserState.js"></script>
@@ -51,6 +53,17 @@
     </head>
 
     <body>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <script>
+            toastr.options.timeOut = 1450;
+            toastr.options.showEasing = 'swing';
+            toastr.options.showMethod = 'fadeIn';
+            toastr.options.closeMethod = 'fadeOut';
+            toastr.options.closeDuration = 10;
+            toastr.options.closeEasing = 'swing';
+            toastr.options.positionClass = 'toast-top-custom';
+        </script>
         <div id = "header">
             <div class = "header_left" id = "header_left_1">
                 MEN

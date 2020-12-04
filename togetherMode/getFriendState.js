@@ -1,7 +1,7 @@
 var togetherModeState;
 var currentRequestKey;
 var myContentsWidth = 1200; // min 1200 (default width)
-
+var prevTogetherModeState = null;
 
 // shopping together mode
 window.addEventListener('load', function() {
@@ -105,6 +105,7 @@ function quitTogetherMode() {
     startTogetherButton.innerHTML = "Shopping together with " + friendName;
     // hide go-to function
     followingButton.style.visibility = 'hidden';
+
 }
 
 
@@ -116,14 +117,22 @@ function traceTogetherModeState() { // always on
     myTogetherModeDB.on('value', function(state){
         togetherModeState = state.val();
 
-        if( togetherModeState == 'off' ) {
+        if( togetherModeState == 'off') {
             quitTogetherMode();
+            if(prevTogetherModeState != 'off' && prevTogetherModeState != null ){
+                toastr.success("Shopping with " + friendName +" is over.", "" , {"iconClass": 'customer-info'});
+            }
+            prevTogetherModeState = 'off';
         }
         else if ( togetherModeState == 'waiting' ) {
-
+            prevTogetherModeState = 'waiting';
         }
-        else if ( togetherModeState == 'on' ) {
+        else if ( togetherModeState == 'on') {
             startTogetherMode();
+            if(prevTogetherModeState != 'on' && prevTogetherModeState != null ){
+                toastr.success("Shopping together with "+ friendName +"!" , "" , {"iconClass": 'customer-info'});
+            }
+            prevTogetherModeState = 'on';
         }
         else if ( togetherModeState.split(":")[0] == 'accept' ) {
             var requestKey = togetherModeState.split(":")[1];
@@ -244,6 +253,7 @@ function traceFriendData(fid){
             document.getElementById('followingButton').innerHTML = "Switch leader with " + friendName;
             document.getElementById('followingButton').style.visibility = 'visible';
             updateUserDataToDB();
+            toastr.success(friendName + " start to following me");
         } else if (!isFollowing()) {
             // friend stops following me
             document.getElementById('followingButton').innerHTML = "Go to " + friendName;
@@ -325,9 +335,3 @@ function renderFriendCursor() {
 }
 
 
-
-// 이거 자기 private page 에도 올 수 있게 하는거랑
-// 각자의 옵션 선택?이 팔로잉 모드에서 같이 나오는걸 보여주면 좋긴할듯..
-
-// 팔로잉 허가할 즉시 커서, 스크롤 포지션 업데이트 필요
-// 클릭시 데이터 전송 ? (옵션 선택 하면)
