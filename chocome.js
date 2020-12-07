@@ -104,19 +104,30 @@ window.addEventListener('load', function() {
         }
     }
 
-    setYetOnline();
+    firebase.database().ref('chocomeUsers/' + studentId).set({onDiffPage : false});
+
     showHuman();
     var myChocomeKey = null;
     newChocomeAdd().then(function(chocomeKey) {
         myChocomeKey = chocomeKey;
         console.log(myChocomeKey);
-        listenToClick();
         window.addEventListener('beforeunload', function(e) {
-            deleteChocome(chocomeKey);
+            var rootRef = firebase.database().ref('/chocome/');
+            rootRef.once('value').then(function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    if (studentId == childSnapshot.val().userId && !childSnapshot.val().yetOnline) {
+                        firebase.database().ref('/removeQueue/').push({
+                            key: myChocomeKey,
+                            uid: studentId
+                        });
+                        firebase.database().ref('/chocome/'+chocomeKey).remove();
+                    }
+                })
+            })
         });
+        listenToClick();
         moveHumans(chocomeKey);
     });
-    //listenToClick();
 
     var d = new Date();
     var insertionTime = d.getTime();
@@ -240,6 +251,7 @@ window.addEventListener('load', function() {
                 const imgNum = thumbnailImagesArr.indexOf(thumbnailImg) + 1;
                 var thisChocome = firebase.database().ref('/chocome/'+myChocomeKey);
                 var movingOrNot;
+                firebase.database().ref('chocomeUsers/' + studentId).set({onDiffPage : true});
                 thisChocome.child('isMoving').once('value').then(function(moveTF){
                     movingOrNot = moveTF.val();
                 }).then(function(){
@@ -256,21 +268,10 @@ window.addEventListener('load', function() {
                                 yetOnline : true
                             });
                         });
-                    };
+                    }
                 });
             }
         }
-    }
-
-    function setYetOnline() {
-        var rootRef = firebase.database().ref('/chocome/');
-        rootRef.once('value').then(function(snapshot) {
-            snapshot.forEach(function(childSnapshot) {
-                if (studentId == childSnapshot.val().userId) {
-                    rootRef.child(childSnapshot.key).update({yetOnline : false});
-                }
-            })
-        })
     }
 
     function moveHumans(myChocomeKey) {
@@ -280,41 +281,33 @@ window.addEventListener('load', function() {
             const movingTime = childSnapshot.val().movingStartTime;
             const movingOrNot = childSnapshot.val().isMoving;
             const uid = childSnapshot.val().userId;
-            console.log(uid);
+            const onlineOrNot = childSnapshot.val().yetOnline;
+            const thisDirection = childSnapshot.val().direction;
+            const thisInitPath = childSnapshot.val().initPath;
             var eachHuman = document.getElementById(uid);
             if (uid != studentId) {
                 if (movingOrNot && insertionTime < movingTime) {
-                    console.log(childSnapshot.key);
                     var curr = childSnapshot.child('currImg').val();
                     var prev = childSnapshot.child('prevImg').val();
-                    console.log(prev);
-                    console.log(curr);
-                    console.log(initPath);
                     eachHuman.childNodes[0].style.visibility = 'hidden';
                     pathAlgo(prev, curr, initPath, eachHuman).then(function(flag) {
                         if (flag)  {
-                            firebase.database().ref('/chocome/'+childSnapshot.key).update({isMoving : false});
+                            firebase.database().ref('/chocome/'+childSnapshot.key).set({
+                                prevImg : prev,
+                                currImg : curr,
+                                initPath : thisInitPath,
+                                isMoving : false,
+                                direction : thisDirection,
+                                userId : uid,
+                                movingStartTime : movingTime,
+                                yetOnline : false
+                            });
                             eachHuman.childNodes[0].style.visibility = 'visible';
                         }
                     });
                 }
             }
         });
-    }
-
-    function deleteChocome() {
-        var rootRef = firebase.database().ref('/chocome/');
-        rootRef.once('value').then(function(snapshot) {
-            snapshot.forEach(function(childSnapshot) {
-                if (studentId == childSnapshot.val().userId && !childSnapshot.val().yetOnline) {
-                    firebase.database().ref('/removeQueue/').push({
-                        key: myChocomeKey,
-                        uid: studentId
-                    });
-                    firebase.database().ref('/chocome/'+childSnapshot.key).remove();
-                }
-            })
-        })
     }
     
     function move(element, direction, distance, duration) {
